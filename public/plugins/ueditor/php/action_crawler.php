@@ -10,12 +10,12 @@ include("Uploader.class.php");
 
 /* 上传配置 */
 $config = array(
-    "pathFormat" => $CONFIG['catcherPathFormat'],
-    "maxSize" => $CONFIG['catcherMaxSize'],
-    "allowFiles" => $CONFIG['catcherAllowFiles'],
+    "pathFormat" => $jsonConfig['catcherPathFormat'],
+    "maxSize" => $jsonConfig['catcherMaxSize'],
+    "allowFiles" => $jsonConfig['catcherAllowFiles'],
     "oriName" => "remote.png"
 );
-$fieldName = $CONFIG['catcherFieldName'];
+$fieldName = $jsonConfig['catcherFieldName'];
 
 /* 抓取远程图片 */
 $list = array();
@@ -38,7 +38,7 @@ foreach ($source as $imgUrl) {
 }
 
 /* 返回抓取数据 */
-return json_encode(array(
+return [
     'state'=> count($list) ? 'SUCCESS':'ERROR',
     'list'=> $list
-));
+];

@@ -60,7 +60,7 @@ class SecurityPlugin extends Plugin
             'admin/invoices'     => ['index', 'profile'],
             'admin/index'        => ['index'],
             'admin/user'         => ['profile', 'index', 'add', 'checkaccount', 'edit', 'del'],
-            'admin/upload'       => ['uploadfile','webuploader'],
+            'admin/upload'       => ['uploadfile','webuploader','uedituploader'],
         ];
         foreach ($privateResources as $resource => $actions) {
             $acl->addResource(new Resource($resource), $actions);

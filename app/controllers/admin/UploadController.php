@@ -100,7 +100,51 @@ class UploadController extends BaseController
      */
     public function uedituploaderAction()
     {
+        // Make sure file is not cached (as it happens for example on iOS devices)
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-store, no-cache, must-revalidate");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
 
+        $jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH."/public/plugins/ueditor/php/config.json")), true);
+
+        $action = $this->request->getQuery('action');
+        switch ($action){
+            case 'config':
+                $this->msg->outputJson($jsonConfig);
+                break;
+            /* 上传图片 */
+            case 'uploadimage':
+                /* 上传涂鸦 */
+            case 'uploadscrawl':
+                /* 上传视频 */
+            case 'uploadvideo':
+                /* 上传文件 */
+            case 'uploadfile':
+                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_upload.php");
+                break;
+            /* 列出图片 */
+            case 'listimage':
+                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_list.php");
+                break;
+            /* 列出文件 */
+            case 'listfile':
+                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_list.php");
+                break;
+
+            /* 抓取远程文件 */
+            case 'catchimage':
+                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_crawler.php");
+                break;
+
+            default:
+                $result = [
+                    'state'=> '请求地址出错'
+                ];
+                break;
+        }
+        $this->msg->outputJson($result);
     }
 
     /**

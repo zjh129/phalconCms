@@ -11,16 +11,16 @@ include "Uploader.class.php";
 switch ($_GET['action']) {
     /* 列出文件 */
     case 'listfile':
-        $allowFiles = $CONFIG['fileManagerAllowFiles'];
-        $listSize = $CONFIG['fileManagerListSize'];
-        $path = $CONFIG['fileManagerListPath'];
+        $allowFiles = $jsonConfig['fileManagerAllowFiles'];
+        $listSize = $jsonConfig['fileManagerListSize'];
+        $path = $jsonConfig['fileManagerListPath'];
         break;
     /* 列出图片 */
     case 'listimage':
     default:
-        $allowFiles = $CONFIG['imageManagerAllowFiles'];
-        $listSize = $CONFIG['imageManagerListSize'];
-        $path = $CONFIG['imageManagerListPath'];
+        $allowFiles = $jsonConfig['imageManagerAllowFiles'];
+        $listSize = $jsonConfig['imageManagerListSize'];
+        $path = $jsonConfig['imageManagerListPath'];
 }
 $allowFiles = substr(str_replace(".", "|", join("", $allowFiles)), 1);
 
@@ -33,12 +33,12 @@ $end = $start + $size;
 $path = $_SERVER['DOCUMENT_ROOT'] . (substr($path, 0, 1) == "/" ? "":"/") . $path;
 $files = getfiles($path, $allowFiles);
 if (!count($files)) {
-    return json_encode(array(
+    return [
         "state" => "no match file",
         "list" => array(),
         "start" => $start,
         "total" => count($files)
-    ));
+    ];
 }
 
 /* 获取指定范围的列表 */
@@ -52,12 +52,12 @@ for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $s
 //}
 
 /* 返回数据 */
-$result = json_encode(array(
+$result = [
     "state" => "SUCCESS",
     "list" => $list,
     "start" => $start,
     "total" => count($files)
-));
+];
 
 return $result;
 

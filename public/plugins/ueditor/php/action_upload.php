@@ -12,38 +12,38 @@ $base64 = "upload";
 switch (htmlspecialchars($_GET['action'])) {
     case 'uploadimage':
         $config = array(
-            "pathFormat" => $CONFIG['imagePathFormat'],
-            "maxSize" => $CONFIG['imageMaxSize'],
-            "allowFiles" => $CONFIG['imageAllowFiles']
+            "pathFormat" => $jsonConfig['imagePathFormat'],
+            "maxSize" => $jsonConfig['imageMaxSize'],
+            "allowFiles" => $jsonConfig['imageAllowFiles']
         );
-        $fieldName = $CONFIG['imageFieldName'];
+        $fieldName = $jsonConfig['imageFieldName'];
         break;
     case 'uploadscrawl':
         $config = array(
-            "pathFormat" => $CONFIG['scrawlPathFormat'],
-            "maxSize" => $CONFIG['scrawlMaxSize'],
-            "allowFiles" => $CONFIG['scrawlAllowFiles'],
+            "pathFormat" => $jsonConfig['scrawlPathFormat'],
+            "maxSize" => $jsonConfig['scrawlMaxSize'],
+            "allowFiles" => $jsonConfig['scrawlAllowFiles'],
             "oriName" => "scrawl.png"
         );
-        $fieldName = $CONFIG['scrawlFieldName'];
+        $fieldName = $jsonConfig['scrawlFieldName'];
         $base64 = "base64";
         break;
     case 'uploadvideo':
         $config = array(
-            "pathFormat" => $CONFIG['videoPathFormat'],
-            "maxSize" => $CONFIG['videoMaxSize'],
-            "allowFiles" => $CONFIG['videoAllowFiles']
+            "pathFormat" => $jsonConfig['videoPathFormat'],
+            "maxSize" => $jsonConfig['videoMaxSize'],
+            "allowFiles" => $jsonConfig['videoAllowFiles']
         );
-        $fieldName = $CONFIG['videoFieldName'];
+        $fieldName = $jsonConfig['videoFieldName'];
         break;
     case 'uploadfile':
     default:
         $config = array(
-            "pathFormat" => $CONFIG['filePathFormat'],
-            "maxSize" => $CONFIG['fileMaxSize'],
-            "allowFiles" => $CONFIG['fileAllowFiles']
+            "pathFormat" => $jsonConfig['filePathFormat'],
+            "maxSize" => $jsonConfig['fileMaxSize'],
+            "allowFiles" => $jsonConfig['fileAllowFiles']
         );
-        $fieldName = $CONFIG['fileFieldName'];
+        $fieldName = $jsonConfig['fileFieldName'];
         break;
 }
 
@@ -63,4 +63,4 @@ $up = new Uploader($fieldName, $config, $base64);
  */
 
 /* 返回数据 */
-return json_encode($up->getFileInfo());
+return $up->getFileInfo();
