@@ -42,6 +42,7 @@ class AdminModule implements ModuleDefinitionInterface
                 'MyApp\Admin\Forms'       => APP_PATH . '/app/forms/admin',
                 'MyApp\Models'            => APP_PATH . '/app/models',
                 'MyApp\Library'           => APP_PATH . '/app/library',
+                'MyApp\Library\Upload'    => APP_PATH . '/app/library/Upload',
                 'MyApp\Plugins'           => APP_PATH . '/app/plugins',
             ]
         );

@@ -23,6 +23,13 @@ class Uploader extends Component
      */
     public function __construct($config)
     {
+        $loader = new \Phalcon\Loader();
+        $loader->registerNamespaces([
+            'MyApp\Library\Upload' => $this->config->application->libraryDir . 'Upload',
+        ]);
+        // Register autoloader
+        $loader->register();
+
         switch ($this->config->environment) {
             case 'dev':
             case 'test':
