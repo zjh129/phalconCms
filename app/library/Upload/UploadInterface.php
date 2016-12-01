@@ -20,7 +20,7 @@ interface UploadInterface
      * 拉取远程图片
      * @return mixed
      */
-    public function saveRemote($imgUrl);
+    public function saveRemote($fileField);
 
     /**
      * 文件列表

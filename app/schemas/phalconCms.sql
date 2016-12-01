@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80000
 File Encoding         : 65001
 
-Date: 2016-12-01 15:23:42
+Date: 2016-12-01 15:25:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,15 +20,15 @@ SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 DROP TABLE IF EXISTS `files_info`;
 CREATE TABLE `files_info` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` int(11) NOT NULL,
-  `fname` varchar(512) NOT NULL,
-  `fkey` varchar(512) NOT NULL,
-  `createTime` int(11) DEFAULT NULL,
-  `description` varchar(1024) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `file_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `file_name` varchar(512) NOT NULL,
+  `file_key` varchar(512) NOT NULL,
+  `create_at` int(11) NOT NULL,
+  `description` varchar(1024) NOT NULL,
+  PRIMARY KEY (`file_id`),
+  UNIQUE KEY `id` (`file_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='上传文件信息表';
 
 -- ----------------------------
 -- Records of files_info
