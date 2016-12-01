@@ -36,7 +36,7 @@ abstract class UploadAbstract
         "ERROR_HTTP_LINK"          => "链接不是http链接",
         "ERROR_HTTP_CONTENTTYPE"   => "链接contentType不正确",
         "INVALID_URL"              => "非法 URL",
-        "INVALID_IP"               => "非法 IP"
+        "INVALID_IP"               => "非法 IP",
     ];
 
     /**
