@@ -16,6 +16,7 @@ class UploadController extends BaseController
 {
     //上传类别
     private $uploadType = 'qiniu';
+
     /**
      * 上传文件
      */
@@ -47,6 +48,7 @@ class UploadController extends BaseController
         }
         exit();
     }
+
     public function webuploaderAction()
     {
         // Make sure file is not cached (as it happens for example on iOS devices)
@@ -58,7 +60,7 @@ class UploadController extends BaseController
 
         $config = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents("config.json")), true);
         $action = $this->request->getQuery('action');
-        switch ($action){
+        switch ($action) {
             case 'config':
                 $this->msg->outputJson($config);
                 break;
@@ -87,9 +89,9 @@ class UploadController extends BaseController
                 break;
 
             default:
-                $result = json_encode(array(
-                    'state'=> '请求地址出错'
-                ));
+                $result = json_encode([
+                    'state' => '请求地址出错'
+                ]);
                 break;
         }
 
@@ -107,22 +109,49 @@ class UploadController extends BaseController
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
 
-        $jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH."/public/plugins/ueditor/php/config.json")), true);
+        $jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH . "/public/plugins/ueditor/php/config.json")), true);
 
         $action = $this->request->getQuery('action');
-        switch ($action){
+        switch ($action) {
             case 'config':
                 $this->msg->outputJson($jsonConfig);
                 break;
             /* 上传图片 */
             case 'uploadimage':
-                /* 上传涂鸦 */
+                $uploader = new \MyApp\Library\Uploader([
+                    "pathFormat" => $jsonConfig['imagePathFormat'],
+                    "maxSize"    => $jsonConfig['imageMaxSize'],
+                    "allowFiles" => $jsonConfig['imageAllowFiles'],
+                ]);
+                $result = $uploader->upFile($jsonConfig['imageFieldName']);
+                break;
+            /* 上传涂鸦 */
             case 'uploadscrawl':
-                /* 上传视频 */
+                $uploader = new \MyApp\Library\Uploader([
+                    "pathFormat" => $jsonConfig['scrawlPathFormat'],
+                    "maxSize"    => $jsonConfig['scrawlMaxSize'],
+                    "allowFiles" => $jsonConfig['scrawlAllowFiles'],
+                    "oriName"    => "scrawl.png",
+                ]);
+                $result = $uploader->upBase64($jsonConfig['scrawlFieldName']);
+                break;
+            /* 上传视频 */
             case 'uploadvideo':
-                /* 上传文件 */
+                $uploader = new \MyApp\Library\Uploader([
+                    "pathFormat" => $jsonConfig['videoPathFormat'],
+                    "maxSize"    => $jsonConfig['videoMaxSize'],
+                    "allowFiles" => $jsonConfig['videoAllowFiles'],
+                ]);
+                $result = $uploader->upFile($jsonConfig['videoFieldName']);
+                break;
+            /* 上传文件 */
             case 'uploadfile':
-                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_upload.php");
+                $uploader = new \MyApp\Library\Uploader([
+                    "pathFormat" => $jsonConfig['filePathFormat'],
+                    "maxSize"    => $jsonConfig['fileMaxSize'],
+                    "allowFiles" => $jsonConfig['fileAllowFiles']
+                ]);
+                $result = $uploader->upFile($jsonConfig['fileFieldName']);
                 break;
             /* 列出图片 */
             case 'listimage':
@@ -132,15 +161,19 @@ class UploadController extends BaseController
             case 'listfile':
                 $result = include(APP_PATH . "/public/plugins/ueditor/php/action_list.php");
                 break;
-
             /* 抓取远程文件 */
             case 'catchimage':
-                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_crawler.php");
+                $uploader = new \MyApp\Library\Uploader([
+                    "pathFormat" => $jsonConfig['catcherPathFormat'],
+                    "maxSize"    => $jsonConfig['catcherMaxSize'],
+                    "allowFiles" => $jsonConfig['catcherAllowFiles'],
+                    "oriName"    => "remote.png",
+                ]);
+                $result = $uploader->saveRemote($jsonConfig['catcherFieldName']);
                 break;
-
             default:
                 $result = [
-                    'state'=> '请求地址出错'
+                    'state' => '请求地址出错'
                 ];
                 break;
         }
@@ -180,19 +213,19 @@ class UploadController extends BaseController
                 // 调用 UploadManager 的 putFile 方法进行文件的上传
                 list($ret, $err) = $uploadMgr->putFile($token, $key, $file->getTempName());
                 if ($err !== null) {
-                    $callback = $this->msg->getJsonCallback('error','文件上传错误:'.$err->message());
+                    $callback = $this->msg->getJsonCallback('error', '文件上传错误:' . $err->message());
                 } else {
-                    $callback = $this->msg->getJsonCallback('success','文件上传成功', [
-                        'url' => $qiniuConfig->domain . $ret['key'],
-                        'title' => $file->getName(),
+                    $callback = $this->msg->getJsonCallback('success', '文件上传成功', [
+                        'url'      => $qiniuConfig->domain . $ret['key'],
+                        'title'    => $file->getName(),
                         'mimeType' => $file->getType(),
-                        'type' => $fileInfo['extension'],
-                        'size' => $file->getSize(),
+                        'type'     => $fileInfo['extension'],
+                        'size'     => $file->getSize(),
                     ]);
                 }
                 $this->msg->outputJson($callback);
             }
-        }else{
+        } else {
             header("HTTP/1.0 500 Internal Server Error");
         }
     }
