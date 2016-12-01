@@ -1,7 +1,7 @@
 /*
 Navicat MySQL Data Transfer
 
-Source Server         : utf8
+Source Server         : local-utf8
 Source Server Version : 80000
 Source Host           : 172.17.0.2:3306
 Source Database       : phalconCms
@@ -10,10 +10,29 @@ Target Server Type    : MYSQL
 Target Server Version : 80000
 File Encoding         : 65001
 
-Date: 2016-11-17 10:56:07
+Date: 2016-12-01 15:23:42
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+-- ----------------------------
+-- Table structure for files_info
+-- ----------------------------
+DROP TABLE IF EXISTS `files_info`;
+CREATE TABLE `files_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `fname` varchar(512) NOT NULL,
+  `fkey` varchar(512) NOT NULL,
+  `createTime` int(11) DEFAULT NULL,
+  `description` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of files_info
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for menus
