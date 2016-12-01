@@ -41,9 +41,18 @@ abstract class UploadAbstract
 
     /**
      * 构造函数
-     * @param string $fileField 表单名称
-     * @param array $config 配置项
-     * @param bool $base64 是否解析base64编码，可省略。若开启，则$fileField代表的是base64编码的字符串表单名
+     * config
+     * [
+     * 上传保存路径
+     * 'pathFormat' => '/upload/image/{yyyy}{mm}{dd}/{time}{rand:6}',
+     *  上传大小限制，单位B
+     * 'maxSize' => 2048000,
+     * 上传图片格式限制
+     * 'allowFiles' => [".png", ".jpg", ".jpeg", ".gif", ".bmp"],
+     * 原始图片名称，可省略
+     * 'oriName' => '',
+     * ]
+     * @param $config
      */
     public function __construct($config)
     {
