@@ -109,6 +109,9 @@ class UploadController extends BaseController
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
 
+        ini_set('upload_max_filesize', '100m');
+        //ini_set('memory_limit', '100m');
+
         $jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH . "/public/plugins/ueditor/php/config.json")), true);
 
         $action = $this->request->getQuery('action');
@@ -130,7 +133,7 @@ class UploadController extends BaseController
                 $uploader = new \MyApp\Library\Uploader([
                     "pathFormat" => $jsonConfig['scrawlPathFormat'],
                     "maxSize"    => $jsonConfig['scrawlMaxSize'],
-                    "allowFiles" => $jsonConfig['scrawlAllowFiles'],
+                    "allowFiles" => $jsonConfig['imageAllowFiles'],
                     "oriName"    => "scrawl.png",
                 ]);
                 $result = $uploader->upBase64($jsonConfig['scrawlFieldName']);

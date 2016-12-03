@@ -77,7 +77,7 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         $uploadConfig = new \Qiniu\Config($uploadZone);
         $uploadMgr = new \Qiniu\Storage\UploadManager($uploadConfig);
         // 上传到七牛后保存的文件名
-        $key = $this->filePath;
+        $key = substr($this->fullName, 1);
         // 调用 UploadManager 的 putFile 方法进行文件的上传
         list($ret, $err) = $uploadMgr->putFile($token, $key, $file["tmp_name"]);
 
@@ -124,7 +124,7 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         $uploadConfig = new \Qiniu\Config($uploadZone);
         $uploadMgr = new \Qiniu\Storage\UploadManager($uploadConfig);
         // 上传到七牛后保存的文件名
-        $key = $this->filePath;
+        $key = substr($this->fullName, 1);
         // 调用 UploadManager 的 putFile 方法进行文件的上传
         list($ret, $err) = $uploadMgr->put($token, $key, $img);
 
@@ -229,7 +229,7 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         $uploadConfig = new \Qiniu\Config($uploadZone);
         $uploadMgr = new \Qiniu\Storage\UploadManager($uploadConfig);
         // 上传到七牛后保存的文件名
-        $key = $this->filePath;
+        $key = substr($this->fullName, 1);
         // 调用 UploadManager 的 putFile 方法进行文件的上传
         list($ret, $err) = $uploadMgr->put($token, $key, $img);
 
