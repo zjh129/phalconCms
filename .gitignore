@@ -3,4 +3,5 @@
 /.project
 /app/cache
 /.idea
-/public/upload
+/public/upload/*
+!/public/upload/index.html
