@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80000
 File Encoding         : 65001
 
-Date: 2016-12-04 13:45:16
+Date: 2016-12-04 22:45:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,11 +33,17 @@ CREATE TABLE `files` (
   PRIMARY KEY (`file_id`),
   UNIQUE KEY `id` (`file_id`),
   KEY `fileListIndex` (`user_id`,`type`,`create_at`) USING BTREE COMMENT '文件管理列表索引\r\n'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='文件信息表';
 
 -- ----------------------------
 -- Records of files
 -- ----------------------------
+INSERT INTO `files` VALUES ('1', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855958210702.jpg', '1480855958210702.jpg', '184503_A25z_245971.jpg', '.jpg', '84296', '2016-12-04 12:52:39');
+INSERT INTO `files` VALUES ('2', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855959101723.jpg', '1480855959101723.jpg', '184504_Y3GQ_245971.jpg', '.jpg', '60725', '2016-12-04 12:52:39');
+INSERT INTO `files` VALUES ('3', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855959451885.jpg', '1480855959451885.jpg', '205014_ZICn_1428332.jpg', '.jpg', '54483', '2016-12-04 12:52:39');
+INSERT INTO `files` VALUES ('4', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855959909962.jpg', '1480855959909962.jpg', '1480759723941633.jpg', '.jpg', '154867', '2016-12-04 12:52:40');
+INSERT INTO `files` VALUES ('5', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/file/20161204/1480857115133630.jpg', '1480857115133630.jpg', '184504_Y3GQ_245971.jpg', '.jpg', '60725', '2016-12-04 13:11:55');
+INSERT INTO `files` VALUES ('6', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/file/20161204/1480857138723351.gz', '1480857138723351.gz', 'php-7.1.0.tar.gz', '.gz', '20190703', '2016-12-04 13:12:52');
 
 -- ----------------------------
 -- Table structure for menus
@@ -138,5 +144,5 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', 'admin', '$2y$12$WjZHZ2MzZUwvazFFTFdqQO82xTjo5N2VOwemsou.zzBdo5WnLq54m', '千寻', 'zhaojianhui129@163.com', '', 'W', '0', '1', '0', '2016-10-18 07:27:38', '2016-10-18 15:12:21');
+INSERT INTO `users` VALUES ('1', 'admin', '$2y$12$b2VYRHNlL25jMEkxSFBPZOdWaG3KC.HOrJjBv5EhOV4OWLdxcPvXC', '千寻', 'zhaojianhui129@163.com', '', 'W', '0', '1', '0', '2016-12-04 12:41:51', '2016-10-18 15:12:21');
 SET FOREIGN_KEY_CHECKS=1;

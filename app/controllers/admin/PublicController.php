@@ -30,6 +30,7 @@ class PublicController extends BaseController
                 } else {
                     $findUser = Users::findFirst(['account' => $account]);
                     $userInfo = $findUser->toArray();
+                    //var_dump($this->security->hash($password));exit();
                     if ($userInfo && $this->security->checkHash($password, $userInfo['password'])) {
                         //用户session KEY
                         $userKey = $this->config->session->adminUserKey;

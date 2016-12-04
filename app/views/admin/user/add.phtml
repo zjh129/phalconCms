@@ -26,9 +26,5 @@
     <!-- /.row -->
 </section>
 <!-- /.content -->
-<!-- 实例化编辑器 -->
-<script type="text/javascript">
-    var ue = UE.getEditor('container',{
-        serverUrl:'<?php echo $this->url->get('Upload/uedituploader');?>',
-    });
+<?php echo $this->tag->ueditor('container','full'); ?>
 </script>

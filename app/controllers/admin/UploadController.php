@@ -162,11 +162,15 @@ class UploadController extends BaseController
                 break;
             /* 列出图片 */
             case 'listimage':
-                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_list.php");
+                $size = (int) $this->request->get('size', 'int', $jsonConfig['imageManagerListSize']);
+                $start = (int) $this->request->get('start', 'int', 0);
+                $result = (new \MyApp\Library\Uploader())->getFileList('image', $start, $size);
                 break;
             /* 列出文件 */
             case 'listfile':
-                $result = include(APP_PATH . "/public/plugins/ueditor/php/action_list.php");
+                $size = (int) $this->request->get('size', 'int', $jsonConfig['imageManagerListSize']);
+                $start = (int) $this->request->get('start', 'int', 0);
+                $result = (new \MyApp\Library\Uploader())->getFileList('file', $start, $size);
                 break;
             /* 抓取远程文件 */
             case 'catchimage':

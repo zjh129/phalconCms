@@ -11,19 +11,92 @@ class MyTag extends Tag
 {
     /**
      * 百度编辑器
+     *
      * @param array $config
      */
-    public static function ueditor($id, $parameters = [])
+    public static function ueditor($id, $type = 'full', $defaultValue = '', $parameters = [])
     {
         $di = self::getDI();
         $di['assetsObj']->addAssets(['UEditor']);
-        $code = '<script type="text/javascript">\n\r';
-        if ($parameters) {
-            $code .= "var ue_" . $id . " = UE.getEditor('" . $id . "', \n\r" . json_encode($parameters) . ");\n\r";
-        } else {
-            $code .= "var ue_" . $id . " = UE.getEditor('" . $id . "');\n\r";
+        $code = '';
+        $code .= '<script type="text/javascript">' . PHP_EOL;
+        //强制设定参数
+        $parameters['serverUrl'] = $di['url']->get('Upload/uedituploader');
+        //工具数量
+        switch ($type) {
+            case 'simple':
+                $parameters['toolbars'] = [[
+                    'fullscreen', 'source', '|', 'undo', 'redo', '|',
+                    'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', '|',
+                    'simpleupload', 'insertimage', '|', 'selectall', 'cleardoc',
+                ]];
+                $defaultValue && $parameters['initialContent'] = htmlspecialchars($defaultValue);
+                break;
+            case 'files':
+                $parameters['toolbars'] = [['attachment']];
+                $parameters['isShow'] = false;
+                $code .= '$("body").append(\'<div id="' . $id . 'Box" style="display:none;"></div>\');' . PHP_EOL;
+                break;
+            case 'images':
+                $parameters['toolbars'] = [['insertimage']];
+                $parameters['isShow'] = false;
+                $code .= '$("body").append(\'<div id="' . $id . 'Box" style="display:none;"></div>\');' . PHP_EOL;
+                break;
+            default:
+                $defaultValue && $parameters['initialContent'] = htmlspecialchars($defaultValue);
         }
-        $code .= '</script>\n\r';
+
+        $code .= "var ue_" . $id . " = UE.getEditor('" . $id . "', " . PHP_EOL . json_encode($parameters, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ");" . PHP_EOL;
+
+        switch ($type) {
+            case 'files':
+                $code .= 'ue_'.$id.'.ready(function () {
+                        //设置编辑器不可用
+                        //_editor.setDisabled();
+                        //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
+                        //_editor.hide();
+                        //侦听文件上传
+                        ue_'.$id.'_editor.addListener(\'afterUpfile\', function (t, arg) {
+                            $("#'.$id.'_val").attr("value", ue_'.$id.'.options.filePath + arg[0].url);
+                        })
+                    });' . PHP_EOL;
+                $code .= '$("#'.$id.'_btn").click(function(){
+                        var myFiles = ue_'.$id.'.getDialog("attachment");
+                        myFiles.open();
+                    });';
+                break;
+            case 'images':
+                $code .= 'ue_'.$id.'.ready(function () {
+                        //设置编辑器不可用
+                        //_editor.setDisabled();
+                        //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
+                        //_editor.hide();
+                        //侦听图片上传
+                        ue_'.$id.'.addListener(\'beforeInsertImage\', function (t, arg) {
+                            $.each(arg, function(i, data){
+                                var html = \'\';
+                                html += \'<li>\'+"\n";
+                                html += \'<input type="hidden" name="voucher[]" id="voucher\'+i+\'" value="\'+data.src+\'">\'+"\n";
+                                html += \'<a target="_blank" href="\'+data.src+\'" class="thumbnail" style="widht:200px; float:left;"><img class="carousel-inner img-responsive img-rounded" src="\'+data.src+\'"></a>\'+"\n";
+                                html += \'<a class="voucherDelete" style="float:right;" href="javascript:;">删除</a><li>\'+"\n";
+                                $(\'#<?=$container?>Box\').append(html);
+                            });
+                
+                            //将地址赋值给相应的input
+                            //$("#'.$id.'_val").attr("value", arg[0].src);
+                            //图片预览
+                            //$("#'.$id.'_pre").attr("src", arg[0].src);
+                        })
+                    });' . PHP_EOL;
+                $code .= '$("#'.$id.'_btn").click(function(){
+                        var myImage = ue_'.$id.'.getDialog("insertimage");
+                        myImage.open();
+                    });' . PHP_EOL;
+                break;
+        }
+
+        $code .= '</script>' . PHP_EOL;
+
         return $code;
     }
 
@@ -32,6 +105,7 @@ class MyTag extends Tag
      * https://my.oschina.net/illone/blog/730174
      * https://github.com/fex-team/webuploader/issues/492
      * http://bbs.csdn.net/topics/391917552
+     *
      * @param array $config
      */
     public static function webuploader($id, $fileType = '', $parameters = [])
@@ -50,12 +124,26 @@ class MyTag extends Tag
         //不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
         $parameters['resize'] = isset($parameters['resize']) ? $parameters['resize'] : false;
         //文件接受服务器
-        $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/webuploader',['action'=>'uploadimage']);
+        $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/webuploader', ['action' => 'uploadimage']);
         switch ($fileType) {
             case 'images':
                 $parameters['accept'] = [
                     'title'      => 'Images',
                     'extensions' => 'gif,jpg,jpeg,bmp,png',
+                    'mimeTypes'  => 'image/gif,image/jpg,image/jpeg,image/bmp,image/png',
+                ];
+                break;
+            case 'file':
+                $parameters['accept'] = [
+                    'title'      => 'Files',
+                    'extensions' => 'png,jpg,jpeg,gif,bmp,flv,swf,mkv,avi,rm,rmvb,mpeg,mpg,ogg,ogv,mov,wmv,mp4,webm,mp3,wav,mid,rar,zip,tar,gz,7z,bz2,cab,iso,doc,docx,xls,xlsx,ppt,pptx,pdf,txt,md,xml',
+                    'mimeTypes'  => 'image/gif,image/jpg,image/jpeg,image/bmp,image/png',
+                ];
+                break;
+            case 'video':
+                $parameters['video'] = [
+                    'title'      => 'Files',
+                    'extensions' => 'flv,swf,mkv,avi,rm,rmvb,mpeg,mpg,ogg,ogv,mov,wmv,mp4,webm,mp3,wav,mid',
                     'mimeTypes'  => 'image/gif,image/jpg,image/jpeg,image/bmp,image/png',
                 ];
                 break;
@@ -96,7 +184,7 @@ class MyTag extends Tag
         }
         //文件上传过程中创建进度条实时显示。
         $code .= "uploader_$id.on( 'uploadProgress', function( file, percentage ) {
-            if($('#".$id."_progress').length){
+            if($('#" . $id . "_progress').length){
                 var percent = $('#" . $id . "_progress .progress span');
         
                 // 避免重复创建
@@ -123,6 +211,7 @@ class MyTag extends Tag
         });" . PHP_EOL;
         $code .= "});" . PHP_EOL;
         $code .= '</script>' . PHP_EOL;
+
         return $code;
     }
 }

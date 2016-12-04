@@ -1,6 +1,7 @@
 <?php
 namespace MyApp\Library;
 
+use MyApp\Models\Files;
 use Phalcon\Mvc\User\Component;
 
 class Uploader extends Component
@@ -22,6 +23,7 @@ class Uploader extends Component
      * 原始图片名称，可省略
      * 'oriName' => '',
      * ]
+     *
      * @param $config
      */
     public function __construct($config = [])
@@ -55,7 +57,7 @@ class Uploader extends Component
         //用户session KEY
         $userKey = $this->config->session->adminUserKey;
         $userInfo = $this->session->get($userKey);
-        $this->userI = (int) $userInfo['user_id'];
+        $this->userId = (int)$userInfo['user_id'];
     }
 
     /**
@@ -69,7 +71,9 @@ class Uploader extends Component
 
     /**
      * 上传文件
+     *
      * @param $fileField
+     *
      * @return bool
      */
     public function upFile($fileField)
@@ -81,7 +85,9 @@ class Uploader extends Component
 
     /**
      * 上传编码64图片
+     *
      * @param $fileField
+     *
      * @return array
      */
     public function upBase64($fileField)
@@ -93,7 +99,9 @@ class Uploader extends Component
 
     /**
      * 上传远程图片
+     *
      * @param $fileField
+     *
      * @return array
      */
     public function saveRemote($fileField)
@@ -105,6 +113,7 @@ class Uploader extends Component
 
     /**
      * 保存文件数据到数据表
+     *
      * @param array $fileInfo
      */
     public function saveDataToTable($type)
@@ -114,32 +123,63 @@ class Uploader extends Component
         if ($fileInfo['state'] == 'SUCCESS') {
             $fileModel = new \MyApp\Models\Files();
             $fileModel->save([
-                'user_id' => $this->userI,
-                'type' => $type,
+                'user_id'    => $this->userId,
+                'type'       => $type,
                 'uploadType' => $this->uploadType,
-                'url' => $fileInfo['url'],
-                'fileName' => $fileInfo['title'],
-                'oriName' => $fileInfo['original'],
-                'fileExt' => $fileInfo['type'],
-                'size' => $fileInfo['size'],
+                'url'        => $fileInfo['url'],
+                'fileName'   => $fileInfo['title'],
+                'oriName'    => $fileInfo['original'],
+                'fileExt'    => $fileInfo['type'],
+                'size'       => $fileInfo['size'],
             ]);
         }
 
     }
 
+    /**
+     * 获取文件列表
+     * @param $type
+     * @param int $start
+     * @param int $size
+     *
+     * @return array
+     */
     public function getFileList($type, $start = 0, $size = 10)
     {
-        $fileModel = new \MyApp\Models\Files();
-        $files = $fileModel::find([
+        $findFiles = Files::find([
             "user_id=:user_id: AND type=:type:",
-            "bind" => [
+            "bind"   => [
                 "user_id" => $this->userId,
-                'type' => $type
+                'type'    => $type,
             ],
-            'order' => "create_at DESC",
+            'order'  => "create_at DESC",
             'offset' => $start,
-            'limit' => $size,
+            'limit'  => $size,
         ]);
+        $fileList = $findFiles->toArray();
+        if (!count($findFiles)) {
+            return [
+                "state" => "no match file",
+                "list"  => [],
+                "start" => $start,
+                "total" => count($fileList),
+            ];
+        } else {
+            $list = [];
+            foreach ($fileList as $v) {
+                $list[] = [
+                    'url'   => $v['url'],
+                    'mtime' => (int)$v['create_at'],
+                ];
+            }
+
+            return [
+                "state" => "SUCCESS",
+                "list"  => $list,
+                "start" => $start,
+                "total" => count($fileList),
+            ];
+        }
 
     }
 }
