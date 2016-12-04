@@ -10,28 +10,33 @@ Target Server Type    : MYSQL
 Target Server Version : 80000
 File Encoding         : 65001
 
-Date: 2016-12-01 15:25:50
+Date: 2016-12-04 13:45:16
 */
 
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
--- Table structure for files_info
+-- Table structure for files
 -- ----------------------------
-DROP TABLE IF EXISTS `files_info`;
-CREATE TABLE `files_info` (
-  `file_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `file_name` varchar(512) NOT NULL,
-  `file_key` varchar(512) NOT NULL,
-  `create_at` int(11) NOT NULL,
-  `description` varchar(1024) NOT NULL,
+DROP TABLE IF EXISTS `files`;
+CREATE TABLE `files` (
+  `file_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '文件序号',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
+  `type` varchar(10) NOT NULL COMMENT '文件类别',
+  `uploadType` varchar(10) NOT NULL COMMENT '文件上传方式',
+  `url` varchar(200) NOT NULL COMMENT '访问路径',
+  `fileName` varchar(20) NOT NULL COMMENT '新文件名',
+  `oriName` varchar(512) NOT NULL COMMENT '文件原名',
+  `fileExt` varchar(10) NOT NULL COMMENT '文件扩展名',
+  `size` int(5) NOT NULL COMMENT '文件大小',
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间\r\n',
   PRIMARY KEY (`file_id`),
-  UNIQUE KEY `id` (`file_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='上传文件信息表';
+  UNIQUE KEY `id` (`file_id`),
+  KEY `fileListIndex` (`user_id`,`type`,`create_at`) USING BTREE COMMENT '文件管理列表索引\r\n'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件信息表';
 
 -- ----------------------------
--- Records of files_info
+-- Records of files
 -- ----------------------------
 
 -- ----------------------------
