@@ -1,6 +1,6 @@
 <?php
 return new \Phalcon\Config([
-    'environment' => 'dev1',//环境常亮（dev：开发;test:测试;production：生产）
+    'environment' => 'dev',//环境常亮（dev：开发;test:测试;production：生产）
     'database'    => [
         'adapter'  => 'Mysql',
         'host'     => '172.17.0.2',

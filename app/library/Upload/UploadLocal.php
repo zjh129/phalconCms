@@ -68,6 +68,7 @@ class UploadLocal extends UploadAbstract implements UploadInterface
         if (!(move_uploaded_file($file["tmp_name"], $this->filePath) && file_exists($this->filePath))) { //移动失败
             $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
         } else { //移动成功
+            $this->fileKey = $ret['key'];
             $this->stateInfo = $this->stateMap[0];
         }
     }

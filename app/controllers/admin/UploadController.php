@@ -112,7 +112,7 @@ class UploadController extends BaseController
         ini_set('upload_max_filesize', '100m');
         //ini_set('memory_limit', '100m');
 
-        $jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH . "/public/plugins/ueditor/php/config.json")), true);
+        $jsonConfig = (new \MyApp\Library\Uploader([]))->getJsonConfig();
 
         $action = $this->request->getQuery('action');
         switch ($action) {
@@ -127,6 +127,7 @@ class UploadController extends BaseController
                     "allowFiles" => $jsonConfig['imageAllowFiles'],
                 ]);
                 $result = $uploader->upFile($jsonConfig['imageFieldName']);
+                $uploader->saveDataToTable('image');
                 break;
             /* 上传涂鸦 */
             case 'uploadscrawl':
@@ -137,6 +138,7 @@ class UploadController extends BaseController
                     "oriName"    => "scrawl.png",
                 ]);
                 $result = $uploader->upBase64($jsonConfig['scrawlFieldName']);
+                $uploader->saveDataToTable('image');
                 break;
             /* 上传视频 */
             case 'uploadvideo':
@@ -146,6 +148,7 @@ class UploadController extends BaseController
                     "allowFiles" => $jsonConfig['videoAllowFiles'],
                 ]);
                 $result = $uploader->upFile($jsonConfig['videoFieldName']);
+                $uploader->saveDataToTable('video');
                 break;
             /* 上传文件 */
             case 'uploadfile':
@@ -155,6 +158,7 @@ class UploadController extends BaseController
                     "allowFiles" => $jsonConfig['fileAllowFiles']
                 ]);
                 $result = $uploader->upFile($jsonConfig['fileFieldName']);
+                $uploader->saveDataToTable('file');
                 break;
             /* 列出图片 */
             case 'listimage':
@@ -173,6 +177,7 @@ class UploadController extends BaseController
                     "oriName"    => "remote.png",
                 ]);
                 $result = $uploader->saveRemote($jsonConfig['catcherFieldName']);
+                $uploader->saveDataToTable('image');
                 break;
             default:
                 $result = [

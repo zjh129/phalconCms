@@ -14,6 +14,7 @@ abstract class UploadAbstract
     protected $filePath; //完整文件名,即从当前配置目录开始的URL
     protected $fileSize; //文件大小
     protected $fileType; //文件类型
+    protected $fileKey;//文件KEY，用于删除
     protected $stateInfo; //上传状态信息,
     protected $stateMap = [ //上传状态映射表，国际化用户需考虑此处数据的国际化
         "SUCCESS", //上传成功标记，在UEditor中内不可改变，否则flash判断会出错

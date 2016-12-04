@@ -86,6 +86,7 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         } else {
             //重设访问url
             $this->fullName = $this->qiniuConfig->domain . $ret['key'];
+            $this->fileKey = $ret['key'];
             $this->stateInfo = $this->stateMap[0];
         }
     }
@@ -133,6 +134,7 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         } else {
             //重设访问url
             $this->fullName = $this->qiniuConfig->domain . $ret['key'];
+            $this->fileKey = $ret['key'];
             $this->stateInfo = $this->stateMap[0];
         }
 
@@ -238,6 +240,7 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         } else {
             //重设访问url
             $this->fullName = $this->qiniuConfig->domain . $ret['key'];
+            $this->fileKey = $ret['key'];
             $this->stateInfo = $this->stateMap[0];
         }
     }
