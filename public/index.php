@@ -4,7 +4,8 @@ error_reporting(E_ALL);
 date_default_timezone_set('Asia/Shanghai');
 ini_set('display_errors', true);
 
-define('APP_PATH', realpath('..'));
+define('DS', DIRECTORY_SEPARATOR);
+define('APP_PATH', __DIR__ . DS . '..');
 
 //url不区分大小写
 if (isset($_GET['_url'])) {
