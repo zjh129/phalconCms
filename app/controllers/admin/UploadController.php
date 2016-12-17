@@ -18,86 +18,6 @@ class UploadController extends BaseController
     private $uploadType = 'qiniu';
 
     /**
-     * 上传文件
-     */
-    public function uploadfileAction()
-    {
-        sleep(5);
-        exit();
-        $qiniuConfig = $this->config->qiniu->phalcontest;
-
-        $auth = new Auth($qiniuConfig->accessKey, $qiniuConfig->secretKey);
-        // 生成上传Token
-        $token = $auth->uploadToken($qiniuConfig->bucket);
-
-        $filePath = APP_PATH . '/public/AdminLTE/dist/img/avatar.png';
-        $fileInfo = pathinfo($filePath);
-        // 初始化 UploadManager 对象并进行文件的上传
-        $uploadZone = new \Qiniu\Zone($qiniuConfig->upHost, $qiniuConfig->upHostBackup);
-        $uploadConfig = new \Qiniu\Config($uploadZone);
-        $uploadMgr = new UploadManager($uploadConfig);
-        // 上传到七牛后保存的文件名
-        $random = new Random();
-        $key = date("Y/m/d/") . $random->uuid() . '.' . $fileInfo['extension'];
-        // 调用 UploadManager 的 putFile 方法进行文件的上传
-        list($ret, $err) = $uploadMgr->putFile($token, $key, $filePath);
-        if ($err !== null) {
-            var_dump($err);
-        } else {
-            var_dump($ret);
-        }
-        exit();
-    }
-
-    public function webuploaderAction()
-    {
-        // Make sure file is not cached (as it happens for example on iOS devices)
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-
-        $config = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents("config.json")), true);
-        $action = $this->request->getQuery('action');
-        switch ($action) {
-            case 'config':
-                $this->msg->outputJson($config);
-                break;
-            /* 上传图片 */
-            case 'uploadimage':
-                /* 上传涂鸦 */
-            case 'uploadscrawl':
-                /* 上传视频 */
-            case 'uploadvideo':
-                /* 上传文件 */
-            case 'uploadfile':
-                $result = include("action_upload.php");
-                break;
-            /* 列出图片 */
-            case 'listimage':
-                $result = include("action_list.php");
-                break;
-            /* 列出文件 */
-            case 'listfile':
-                $result = include("action_list.php");
-                break;
-
-            /* 抓取远程文件 */
-            case 'catchimage':
-                $result = include("action_crawler.php");
-                break;
-
-            default:
-                $result = json_encode([
-                    'state' => '请求地址出错'
-                ]);
-                break;
-        }
-
-    }
-
-    /**
      * 百度编辑器上传
      */
     public function uedituploaderAction()
@@ -240,30 +160,5 @@ class UploadController extends BaseController
         } else {
             header("HTTP/1.0 500 Internal Server Error");
         }
-    }
-
-    /**
-     *本地文件上传
-     */
-    private function localUploaderfile()
-    {
-
-    }
-
-    /**
-     * 本地列出文件
-     * @param $type image:图片，file：文件
-     */
-    private function listFile($type = 'image')
-    {
-
-    }
-
-    /**
-     * 抓取远程文件
-     */
-    private function catchimage()
-    {
-
     }
 }

@@ -123,8 +123,10 @@ class MyTag extends Tag
         $parameters['swf'] = isset($parameters['swf']) ? $parameters['swf'] : '/plugins/ueditor/third-party/webuploader/Uploader.swf';
         //不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
         $parameters['resize'] = isset($parameters['resize']) ? $parameters['resize'] : false;
+        //设置文件上传域的name
+        $parameters['fileVal'] = 'upfile';
         //文件接受服务器
-        $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/webuploader', ['action' => 'uploadimage']);
+        $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/uedituploader', ['action' => 'uploadimage']);
         switch ($fileType) {
             case 'images':
                 $parameters['accept'] = [
@@ -160,7 +162,7 @@ class MyTag extends Tag
         //当有文件添加进来的时候
         if ($fileType == 'images') {
             $code .= "uploader_$id.on( 'uploadSuccess', function( file, response ) {
-                if(response.code == 200){
+                if(response.state == 'SUCCESS'){
                     if(!$('#preview_$id').length){
                         $('" . $parameters['pick'] . "').after('<div id=\"preview_$id\" class=\"col-sm-9 thumbnail\" style=\"margin: 0px;\"><img></div>');
                     }
@@ -172,10 +174,10 @@ class MyTag extends Tag
                         $('#preview_$id img').attr( 'src', src );
                     }, thumbnailWidth, thumbnailHeight );
                     if($('#{$id}_val').length){
-                       $('#{$id}_val').val(response.content.url); 
+                       $('#{$id}_val').val(response.url); 
                     }
                 }else{
-                    $.alert({title: '提示',content: response.message,autoClose: 'ok|1000',});
+                    $.alert({title: '提示',content: '上传失败',autoClose: 'ok|1000',});
                 }
             });" . PHP_EOL;
             $code .= "if($('#" . $id . "_val').val() != '' && $('#preview_$id').length){
