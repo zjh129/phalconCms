@@ -16,8 +16,8 @@ class MyTag extends Tag
      */
     public static function ueditor($id, $type = 'full', $defaultValue = '', $parameters = [])
     {
-        //$di = self::getDI();
-        //$di['assetsObj']->addAssets(['UEditor']);
+        $di = self::getDI();
+        $di['assetsObj']->addAssets(['UEditor']);
         $code = '';
         $code .= '<script type="text/javascript">' . PHP_EOL;
         //强制设定参数

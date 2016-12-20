@@ -162,6 +162,10 @@ class Assets extends Component
         if (in_array('UEditor', $this->assetsList)){
             $headerJs->addJs('plugins/ueditor/ueditor.config.js');
             $headerJs->addJs('plugins/ueditor/ueditor.all.js');
+            //公式js
+//            $headerJs->addJs('plugins/ueditor/kityformula-plugin/addKityFormulaDialog.js');
+//            $headerJs->addJs('plugins/ueditor/kityformula-plugin/getKfContent.js');
+//            $headerJs->addJs('plugins/ueditor/kityformula-plugin/defaultFilterFix.js');
         }
         //webuploader
         if (in_array('webuploader', $this->assetsList)){
