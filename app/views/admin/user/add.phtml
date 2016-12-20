@@ -11,6 +11,7 @@
                         <script id="container" name="content" type="text/plain">
                             这里写你的初始化内容
                         </script>
+                        <button type="input" id="upload_btn" name="upload_btn" value="">上传图片</button>
                     </div>
                 </div>
                 <!-- /.box-header -->
@@ -26,5 +27,6 @@
     <!-- /.row -->
 </section>
 <!-- /.content -->
-<?php echo $this->tag->ueditor('container','full'); ?>
+<?php //echo $this->tag->ueditor('container','full'); ?>
+<?php echo $this->tag->ueditor('upload','images'); ?>
 </script>
