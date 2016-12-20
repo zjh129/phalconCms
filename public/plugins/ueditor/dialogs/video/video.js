@@ -270,8 +270,6 @@
 
         var conUrl = convert_url(url);
 
-        conUrl = utils.unhtmlForUrl(conUrl);
-
         $G("preview").innerHTML = '<div class="previewMsg"><span>'+lang.urlError+'</span></div>'+
         '<embed class="previewVideo" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"' +
             ' src="' + conUrl + '"' +
@@ -286,8 +284,8 @@
     function insertUpload(){
         var videoObjs=[],
             uploadDir = editor.getOpt('videoUrlPrefix'),
-            width = parseInt($G('upload_width').value, 10) || 420,
-            height = parseInt($G('upload_height').value, 10) || 280,
+            width = $G('upload_width').value || 420,
+            height = $G('upload_height').value || 280,
             align = findFocus("upload_alignment","name") || 'none';
         for(var key in uploadVideoList) {
             var file = uploadVideoList[key];
@@ -705,7 +703,8 @@
                         /* 添加额外的GET参数 */
                         var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
                             url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
-                        uploader.option('server', url);
+                        //uploader.option('server', url);
+                        uploader.option('server', editor.getOpt('imageUrl'));
                         setState('uploading', files);
                         break;
                     case 'stopUpload':
@@ -717,6 +716,20 @@
             uploader.on('uploadBeforeSend', function (file, data, header) {
                 //这里可以通过data对象添加POST参数
                 header['X_Requested_With'] = 'XMLHttpRequest';
+                var path = editor.getOpt('uploadPath');
+                var now = new Date();
+                var filename = path + now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()+'/'+file.file.name;
+                data['key']= filename;
+                var token ="";
+                $.ajax({
+                            dataType:'text',
+                            async:false,
+                            url:"../../php/getToken.php?key="+filename,
+                            success:function(data) {
+                                token = data;
+                            }
+                });
+                data['token'] = token;
             });
 
             uploader.on('uploadProgress', function (file, percentage) {
@@ -734,11 +747,11 @@
                     var responseText = (ret._raw || ret),
                         json = utils.str2json(responseText);
                     if (json.state == 'SUCCESS') {
-                        uploadVideoList.push({
+                        uploadVideoList[$file.index()] = {
                             'url': json.url,
                             'type': json.type,
                             'original':json.original
-                        });
+                        };
                         $file.append('<span class="success"></span>');
                     } else {
                         $file.find('.error').text(json.state).show();

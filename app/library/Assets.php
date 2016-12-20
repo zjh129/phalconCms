@@ -161,7 +161,7 @@ class Assets extends Component
         //修复地址：https://github.com/fex-team/ueditor/issues/2983#issuecomment-239741212
         if (in_array('UEditor', $this->assetsList)){
             $headerJs->addJs('plugins/ueditor/ueditor.config.js');
-            $headerJs->addJs('plugins/ueditor/ueditor.all.min.js');
+            $headerJs->addJs('plugins/ueditor/ueditor.all.js');
         }
         //webuploader
         if (in_array('webuploader', $this->assetsList)){
