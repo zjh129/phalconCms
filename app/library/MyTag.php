@@ -16,8 +16,8 @@ class MyTag extends Tag
      */
     public static function ueditor($id, $type = 'full', $defaultValue = '', $parameters = [])
     {
-        $di = self::getDI();
-        $di['assetsObj']->addAssets(['UEditor']);
+        //$di = self::getDI();
+        //$di['assetsObj']->addAssets(['UEditor']);
         $code = '';
         $code .= '<script type="text/javascript">' . PHP_EOL;
         //强制设定参数
@@ -124,7 +124,7 @@ class MyTag extends Tag
         //不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
         $parameters['resize'] = isset($parameters['resize']) ? $parameters['resize'] : false;
         //设置文件上传域的name
-        $parameters['fileVal'] = 'upfile';
+        //$parameters['fileVal'] = 'upfile';
         //文件接受服务器
         $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/uedituploader', ['action' => 'uploadimage']);
         switch ($fileType) {
