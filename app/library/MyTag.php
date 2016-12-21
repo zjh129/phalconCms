@@ -128,6 +128,7 @@ class MyTag extends Tag
         //文件接受服务器
         $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/uedituploader', ['action' => 'uploadimage']);
         switch ($fileType) {
+
             case 'images':
                 $parameters['accept'] = [
                     'title'      => 'Images',
