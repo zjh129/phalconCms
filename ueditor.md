@@ -104,3 +104,10 @@ uploader.on('uploadBeforeSend', function (file, data, header) {
 ./dialogs/attachment/attachment.js
 ./dialogs/video/video.js
 改造方法类似image.js的改造，
+####然后在设置的serverUrl设置getToken动作，用于返回
+```json
+{
+    key:'ueditor/php/upload/image/20161222/1482398281940863.jpg',//保存到七牛上的图片路径
+    token:'xxxxxx',//上传秘钥，七牛php的sdk提供了此方法
+}
+```
