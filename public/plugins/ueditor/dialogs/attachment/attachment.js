@@ -471,10 +471,15 @@
                         setState('confirm', files);
                         break;
                     case 'startUpload':
-                        /* 添加额外的GET参数 */
-                        var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
-                            url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
-                       uploader.option('server', editor.getOpt('imageUrl'));
+                        uploadType = editor.getOpt('uploadType');
+                        if (uploadType == 'qiniu') {
+                            uploader.option('server', editor.getOpt('uploadUrl'));
+                        }else{
+                            /* 添加额外的GET参数 */
+                            var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
+                                url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
+                            uploader.option('server', url);
+                        }
                         setState('uploading', files);
                         break;
                     case 'stopUpload':
@@ -486,27 +491,33 @@
             uploader.on('uploadBeforeSend', function (file, data, header) {
                 //这里可以通过data对象添加POST参数
                 header['X_Requested_With'] = 'XMLHttpRequest';
-                var type = editor.getOpt('imageSaveType');
-                var path = editor.getOpt('uploadPath');
-				var filename = '';
-                var now = new Date();
-				if(type == 'date'){
-                    var filename = path + now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()+'/'+Date.parse(now)+"."+file.file.ext;
-					data['key']= filename;
-				}else{
-					data['key']= path + file.file.name;
-					var filename = file.file.name;
-				}
-				var token ="";
-				$.ajax({
-							dataType:'text',
-							async:false,
-							url:"../../php/getToken.php?key="+filename+"&type=file",
-							success:function(data) {
-								token = data;
-							}
-				});
-                data['token'] = token;
+                uploadType = editor.getOpt('uploadType');
+                if (uploadType == 'qiniu') {
+                    var token ="";
+                    var key = "";
+                    var url = editor.getActionUrl(editor.getOpt('tokenActionName'));
+                    $.ajax({
+                        dataType:'json',
+                        async:false,
+                        url:url,
+                        data:{
+                            type:'file',
+                            fileName:file.file.name,
+                            fileSize:file.file.size,
+                            ext:file.file.ext,
+                        },
+                        success:function(data) {
+                            if (data.token != '') {
+                                token = data.token;
+                            }
+                            if (data.key != '') {
+                                key = data.key;
+                            }
+                        }
+                    });
+                    data['key'] = key;
+                    data['token'] = token;
+                }
             });
 
             uploader.on('uploadProgress', function (file, percentage) {
@@ -524,7 +535,7 @@
                     var responseText = (ret._raw || ret),
                         json = utils.str2json(responseText);
                     if (json.state == 'SUCCESS') {
-                        _this.fileList[$file.index()] = json;//指定键值防止乱序
+                        _this.fileList.push(json);
                         $file.append('<span class="success"></span>');
                     } else {
                         $file.find('.error').text(json.state).show();

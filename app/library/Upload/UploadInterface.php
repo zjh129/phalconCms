@@ -4,6 +4,13 @@ namespace MyApp\Library\Upload;
 
 interface UploadInterface
 {
+    public function setJsonConfig($jsonConfig);
+    /**
+     * getToken
+     * @param $key
+     * @return mixed
+     */
+    public function getToken($key);
     /**
      * 上传文件
      * @return mixed

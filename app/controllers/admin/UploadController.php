@@ -32,7 +32,10 @@ class UploadController extends BaseController
         ini_set('upload_max_filesize', '100m');
         //ini_set('memory_limit', '100m');
 
-        $jsonConfig = (new \MyApp\Library\Uploader([]))->getJsonConfig();
+        $uploader = new \MyApp\Library\Uploader([]);
+        $uploader->setJsonConfig();
+
+        $jsonConfig = $uploader->getJsonConfig();
 
         $action = $this->request->getQuery('action');
         switch ($action) {
@@ -102,6 +105,20 @@ class UploadController extends BaseController
                 ]);
                 $result = $uploader->saveRemote($jsonConfig['catcherFieldName']);
                 $uploader->saveDataToTable('image');
+                break;
+            case 'getToken':
+                $type = $this->request->get('type');
+                $fileName = $this->request->get('fileName');
+                $uploader = new \MyApp\Library\Uploader([]);
+                //file name
+                $key = $uploader->getFullName($type, $fileName);
+                if ($key){
+                    $result['key'] = $key;
+                    $token = $uploader->getToken($key);
+                    $result['token'] = $token;
+                }else{
+                    $result['token'] = '';
+                }
                 break;
             default:
                 $result = [

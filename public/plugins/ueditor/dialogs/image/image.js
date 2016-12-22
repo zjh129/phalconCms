@@ -247,13 +247,16 @@
         },
         setPreview: function(){
             var url = $G('url').value,
-                ow = $G('width').value,
-                oh = $G('height').value,
-                border = $G('border').value,
+                ow = parseInt($G('width').value, 10) || 0,
+                oh = parseInt($G('height').value, 10) || 0,
+                border = parseInt($G('border').value, 10) || 0,
                 title = $G('title').value,
                 preview = $G('preview'),
                 width,
                 height;
+
+            url = utils.unhtmlForUrl(url);
+            title = utils.unhtml(title);
 
             width = ((!ow || !oh) ? preview.offsetWidth:Math.min(ow, preview.offsetWidth));
             width = width+(border*2) > preview.offsetWidth ? width:(preview.offsetWidth - (border*2));
@@ -367,7 +370,7 @@
                 accept: {
                     title: 'Images',
                     extensions: acceptExtensions,
-                    mimeTypes: 'image/gif,image/jpg,image/jpeg,image/bmp,image/png'
+                    mimeTypes: 'image/gif,image/jpeg,image/png,image/jpg,image/bmp'
                 },
                 swf: '../../third-party/webuploader/Uploader.swf',
                 server: actionUrl,
@@ -686,10 +689,15 @@
                         setState('confirm', files);
                         break;
                     case 'startUpload':
-                        /* 添加额外的GET参数 */
-                        var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
-                            url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
-                        uploader.option('server', editor.getOpt('imageUrl'));
+                        uploadType = editor.getOpt('uploadType');
+                        if (uploadType == 'qiniu') {
+                            uploader.option('server', editor.getOpt('uploadUrl'));
+                        }else{
+                            /* 添加额外的GET参数 */
+                            var params = utils.serializeParam(editor.queryCommandValue('serverparam')) || '',
+                                url = utils.formatUrl(actionUrl + (actionUrl.indexOf('?') == -1 ? '?':'&') + 'encode=utf-8&' + params);
+                            uploader.option('server', url);
+                        }
                         setState('uploading', files);
                         break;
                     case 'stopUpload':
@@ -701,30 +709,34 @@
             uploader.on('uploadBeforeSend', function (file, data, header) {
                 //这里可以通过data对象添加POST参数
                 header['X_Requested_With'] = 'XMLHttpRequest';
-                var type = editor.getOpt('imageSaveType');
-                var path = editor.getOpt('uploadPath');
-                //生成一个随机数目，防止批量上传的时候文件名同名出错
-                var randNumber = Math.floor(Math.random()*10).toString()+Math.floor(Math.random()*20).toString();
-                var now = new Date();
-                if(type == 'date'){
-                var filename = path + now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate()+'/'+Date.parse(now)+randNumber+"."+file.file.ext;
-                    data['key'] = filename;
-                }else{
-                    var filename = path + file.file.name;
-                    data['key'] = filename;
-                }
-                var token ="";
-                $.ajax({
-                dataType:'text',
-                async:false,
-                url:"../../php/getToken.php?key="+filename,
-                            success:function(data) {
-                                token = data;
+                uploadType = editor.getOpt('uploadType');
+                if (uploadType == 'qiniu') {
+                    var token ="";
+                    var key = "";
+                    var url = editor.getActionUrl(editor.getOpt('tokenActionName'));
+                    $.ajax({
+                        dataType:'json',
+                        async:false,
+                        url:url,
+                        data:{
+                            type:'image',
+                            fileName:file.file.name,
+                            fileSize:file.file.size,
+                            ext:file.file.ext,
+                        },
+                        success:function(data) {
+                            if (data.token != '') {
+                                token = data.token;
                             }
-                });
-                data['token'] = token;
+                            if (data.key != '') {
+                                key = data.key;
+                            }
+                        }
+                    });
+                    data['key'] = key;
+                    data['token'] = token;
+                }
             });
-
 
             uploader.on('uploadProgress', function (file, percentage) {
                 var $li = $('#' + file.id),
@@ -741,7 +753,7 @@
                     var responseText = (ret._raw || ret),
                         json = utils.str2json(responseText);
                     if (json.state == 'SUCCESS') {
-                        _this.imageList[$file.index()] = json;//指定键值防止乱序
+                        _this.imageList.push(json);
                         $file.append('<span class="success"></span>');
                     } else {
                         $file.find('.error').text(json.state).show();

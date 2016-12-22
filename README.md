@@ -28,24 +28,3 @@ $BUCKET = "";
 //配置你的域名访问地址
 $HOST  = "";
 ```
-###ueditor问题修复
-1、点击上传图片按钮弹出很慢问题
-修改路径:/ueditor/dialogs/image/image.js
-```javascript
-accept: {
-    title: 'Images',
-    extensions: acceptExtensions,
-    mimeTypes: 'image/*'
-}
-```
-改为如下：
-```javascript
-accept: {
-    title: 'Images',
-    extensions: acceptExtensions,
-    mimeTypes: 'image/gif,image/jpeg,image/png,image/jpg,image/bmp'
-}
-```
-2、发现单图上传也会有这个问题
-修改路径：/ueditor/ueditor.all.js
-或者搜索 accept="image/ 在这个方法里面将 image/* 替换成 image/gif,image/jpeg,image/png,image/jpg,image/bmp 即可。

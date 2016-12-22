@@ -60,6 +60,11 @@ class Uploader extends Component
         $this->userId = (int)$userInfo['user_id'];
     }
 
+    public function setJsonConfig()
+    {
+        $this->jsonConfig = $this->uploader->setJsonConfig($this->jsonConfig);
+    }
+
     /**
      * 获取百度编辑器json配置
      * @return mixed
@@ -67,6 +72,16 @@ class Uploader extends Component
     public function getJsonConfig()
     {
         return $this->jsonConfig;
+    }
+
+    /**
+     * getToken
+     * @param $key
+     * @return mixed|string
+     */
+    public function getToken($key)
+    {
+        return $this->uploader->getToken($key);
     }
 
     /**
@@ -111,6 +126,72 @@ class Uploader extends Component
         return $this->uploader->getFileInfo();
     }
 
+    protected function parseFormat($format)
+    {
+        //替换日期事件
+        $t = time();
+        $d = explode('-', date("Y-y-m-d-H-i-s"));
+        $format = str_replace("{yyyy}", $d[0], $format);
+        $format = str_replace("{yy}", $d[1], $format);
+        $format = str_replace("{mm}", $d[2], $format);
+        $format = str_replace("{dd}", $d[3], $format);
+        $format = str_replace("{hh}", $d[4], $format);
+        $format = str_replace("{ii}", $d[5], $format);
+        $format = str_replace("{ss}", $d[6], $format);
+        $format = str_replace("{time}", $t, $format);
+
+        //替换随机字符串
+        $randNum = rand(1, 10000000000) . rand(1, 10000000000);
+        if (preg_match("/\{rand\:([\d]*)\}/i", $format, $matches)) {
+            $format = preg_replace("/\{rand\:[\d]*\}/i", substr($randNum, 0, $matches[1]), $format);
+        }
+
+        return $format;
+    }
+
+    protected function getFileExt($fileName)
+    {
+        return strtolower(strrchr($fileName, '.'));
+    }
+
+    protected function getFormat($type)
+    {
+        $format = '';
+        switch ($type){
+            case 'image':
+                $format = $this->jsonConfig['imagePathFormat'];
+                break;
+            case 'scrawl':
+                $format = $this->jsonConfig['scrawlPathFormat'];
+                break;
+            case 'snapscreen':
+                $format = $this->jsonConfig['snapscreenPathFormat'];
+                break;
+            case 'catcher':
+                $format = $this->jsonConfig['catcherPathFormat'];
+                break;
+            case 'video':
+                $format = $this->jsonConfig['videoPathFormat'];
+                break;
+            case 'file':
+                $format = $this->jsonConfig['filePathFormat'];
+                break;
+            default:
+                $format = $this->jsonConfig['imagePathFormat'];
+        }
+        return $format;
+    }
+
+    public function getFullName($type, $originName)
+    {
+        $format = $this->getFormat($type);
+        $ext = $this->getFileExt($originName);
+        $fileName = $this->parseFormat($format) . $ext;
+        if ($this->uploadType == 'qiniu'){
+            $fileName = substr($fileName, 1);
+        }
+        return $fileName;
+    }
     /**
      * 保存文件数据到数据表
      *
@@ -133,7 +214,6 @@ class Uploader extends Component
                 'size'       => $fileInfo['size'],
             ]);
         }
-
     }
 
     /**

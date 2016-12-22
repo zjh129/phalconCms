@@ -18,6 +18,39 @@ class UploadQiniu extends UploadAbstract implements UploadInterface
         $this->qiniuConfig = $qiniuConfig;
     }
 
+    public function setJsonConfig($jsonConfig)
+    {
+        $jsonConfig['uploadType'] = 'qiniu';
+        $jsonConfig['tokenActionName'] = 'getToken';
+        $jsonConfig['uploadUrl'] = 'http://upload.qiniu.com/';
+        $jsonConfig['imageFieldName'] = 'file';
+        $jsonConfig['videoFieldName'] = 'file';
+        $jsonConfig['fileFieldName'] = 'file';
+        //上传大小限制，单位B，默认100MB
+        $jsonConfig['videoMaxSize'] = 102400000*10;
+        return $jsonConfig;
+    }
+
+    public function getToken($key)
+    {
+        $qiniuConfig = $this->qiniuConfig;
+
+        $auth = new \Qiniu\Auth($qiniuConfig->accessKey, $qiniuConfig->secretKey);
+        $returnBody = [
+            'url'   => $this->qiniuConfig->domain . '$(key)',
+            'state' => 'SUCCESS',
+            'name'  => '$(fname)',
+            'size'  => '$(fsize)',
+            'w'     => '$(imageInfo.width)',
+            'h'     => '$(imageInfo.height)',
+        ];
+        $returnBody = json_encode($returnBody);
+        // 生成上传Token
+        $token = $auth->uploadToken($qiniuConfig->bucket, $key, 3600, ['returnBody' => $returnBody]);
+
+        return $token;
+    }
+
     /**
      * 上传文件的主处理方法
      * @return mixed
