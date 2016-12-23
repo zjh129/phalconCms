@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80000
 File Encoding         : 65001
 
-Date: 2016-12-04 22:45:50
+Date: 2016-12-23 15:00:46
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -25,25 +25,36 @@ CREATE TABLE `files` (
   `type` varchar(10) NOT NULL COMMENT '文件类别',
   `uploadType` varchar(10) NOT NULL COMMENT '文件上传方式',
   `url` varchar(200) NOT NULL COMMENT '访问路径',
-  `fileName` varchar(20) NOT NULL COMMENT '新文件名',
-  `oriName` varchar(512) NOT NULL COMMENT '文件原名',
+  `fileName` varchar(100) NOT NULL COMMENT '新文件名',
+  `oriName` varchar(100) NOT NULL COMMENT '文件原名',
   `fileExt` varchar(10) NOT NULL COMMENT '文件扩展名',
   `size` int(5) NOT NULL COMMENT '文件大小',
   `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间\r\n',
   PRIMARY KEY (`file_id`),
   UNIQUE KEY `id` (`file_id`),
   KEY `fileListIndex` (`user_id`,`type`,`create_at`) USING BTREE COMMENT '文件管理列表索引\r\n'
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='文件信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8 COMMENT='文件信息表';
 
 -- ----------------------------
 -- Records of files
 -- ----------------------------
-INSERT INTO `files` VALUES ('1', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855958210702.jpg', '1480855958210702.jpg', '184503_A25z_245971.jpg', '.jpg', '84296', '2016-12-04 12:52:39');
-INSERT INTO `files` VALUES ('2', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855959101723.jpg', '1480855959101723.jpg', '184504_Y3GQ_245971.jpg', '.jpg', '60725', '2016-12-04 12:52:39');
-INSERT INTO `files` VALUES ('3', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855959451885.jpg', '1480855959451885.jpg', '205014_ZICn_1428332.jpg', '.jpg', '54483', '2016-12-04 12:52:39');
-INSERT INTO `files` VALUES ('4', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/image/20161204/1480855959909962.jpg', '1480855959909962.jpg', '1480759723941633.jpg', '.jpg', '154867', '2016-12-04 12:52:40');
-INSERT INTO `files` VALUES ('5', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/file/20161204/1480857115133630.jpg', '1480857115133630.jpg', '184504_Y3GQ_245971.jpg', '.jpg', '60725', '2016-12-04 13:11:55');
-INSERT INTO `files` VALUES ('6', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/upload/file/20161204/1480857138723351.gz', '1480857138723351.gz', 'php-7.1.0.tar.gz', '.gz', '20190703', '2016-12-04 13:12:52');
+INSERT INTO `files` VALUES ('31', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973697788.jpg', 'ueditor/php/upload/image/20161223/1482463973697788.jpg', '174233_IJ0T_1428332.jpg', '.jpg', '65800', '2016-12-23 03:32:53');
+INSERT INTO `files` VALUES ('32', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973320149.jpg', 'ueditor/php/upload/image/20161223/1482463973320149.jpg', '173210_huVR_1428332.jpg', '.jpg', '71997', '2016-12-23 03:32:53');
+INSERT INTO `files` VALUES ('33', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973465494.jpg', 'ueditor/php/upload/image/20161223/1482463973465494.jpg', '190741_wdZi_1428332.jpg', '.jpg', '140146', '2016-12-23 03:32:53');
+INSERT INTO `files` VALUES ('34', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973896880.jpg', 'ueditor/php/upload/image/20161223/1482463973896880.jpg', '192326_7hjm_1428332.jpg', '.jpg', '76021', '2016-12-23 03:32:53');
+INSERT INTO `files` VALUES ('35', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973318370.jpg', 'ueditor/php/upload/image/20161223/1482463973318370.jpg', '194238_rgNV_229201.jpg', '.jpg', '104141', '2016-12-23 03:32:53');
+INSERT INTO `files` VALUES ('36', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973553709.jpg', 'ueditor/php/upload/image/20161223/1482463973553709.jpg', '194733_5vXt_1428332.jpg', '.jpg', '213541', '2016-12-23 03:32:53');
+INSERT INTO `files` VALUES ('37', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973865674.jpg', 'ueditor/php/upload/image/20161223/1482463973865674.jpg', '202033_fkug_1428332.jpg', '.jpg', '83499', '2016-12-23 03:32:54');
+INSERT INTO `files` VALUES ('38', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973551701.jpg', 'ueditor/php/upload/image/20161223/1482463973551701.jpg', '210058_1Z5G_1428332.jpg', '.jpg', '67347', '2016-12-23 03:32:54');
+INSERT INTO `files` VALUES ('39', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482463973540082.jpg', 'ueditor/php/upload/image/20161223/1482463973540082.jpg', '204011_DFwc_1428332.jpg', '.jpg', '273175', '2016-12-23 03:32:55');
+INSERT INTO `files` VALUES ('40', '1', 'video', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/video/20161223/1482464020848695.rmvb', 'ueditor/php/upload/video/20161223/1482464020848695.rmvb', '112.rmvb', '.rmvb', '115176047', '2016-12-23 03:39:08');
+INSERT INTO `files` VALUES ('41', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/file/20161223/1482464467376646.xls', 'ueditor/php/upload/file/20161223/1482464467376646.xls', '赵建辉_工作计划_2016-12-12.xls', '.xls', '22016', '2016-12-23 03:41:07');
+INSERT INTO `files` VALUES ('42', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/file/20161223/1482464467196494.xls', 'ueditor/php/upload/file/20161223/1482464467196494.xls', '赵建辉_工作计划_2016-12-19.xls', '.xls', '15360', '2016-12-23 03:41:07');
+INSERT INTO `files` VALUES ('43', '1', 'file', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/file/20161223/1482464551559030.jpg', 'ueditor/php/upload/file/20161223/1482464551559030.jpg', '字根.jpg', '.jpg', '661895', '2016-12-23 03:42:32');
+INSERT INTO `files` VALUES ('44', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482464584233016.png', '1482464584233016.png', 'scrawl.png', '.png', '9806', '2016-12-23 03:43:04');
+INSERT INTO `files` VALUES ('45', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482464833845063.jpg', '1482464833845063.jpg', '192326_7hjm_1428332.jpg', '.jpg', '76021', '2016-12-23 03:47:13');
+INSERT INTO `files` VALUES ('46', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482473354458840.jpg', '1482473354458840.jpg', '194238_rgNV_229201.jpg', '.jpg', '104141', '2016-12-23 06:09:14');
+INSERT INTO `files` VALUES ('47', '1', 'image', 'qiniu', 'http://ofcalqdk5.bkt.clouddn.com/ueditor/php/upload/image/20161223/1482473359521258.jpg', '1482473359521258.jpg', '210058_1Z5G_1428332.jpg', '.jpg', '67347', '2016-12-23 06:09:19');
 
 -- ----------------------------
 -- Table structure for menus
