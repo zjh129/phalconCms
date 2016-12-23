@@ -4,15 +4,7 @@ namespace MyApp\Library\Upload;
 
 class UploadLocal extends UploadAbstract implements UploadInterface
 {
-    public function setJsonConfig($jsonConfig)
-    {
-        $jsonConfig['uploadType'] = 'qiniu';
-        $jsonConfig['tokenActionName'] = 'getToken';
-
-        return $jsonConfig;
-    }
-
-    public function getToken($key)
+    public function getToken($key, $type)
     {
         return '';
     }

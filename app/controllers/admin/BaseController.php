@@ -14,6 +14,8 @@ class BaseController extends Controller
 {
     //面包屑
     public $breadcrumb = [];
+    //用户信息
+    protected $userInfo;
 
     /**
      * @var $msg
@@ -23,6 +25,10 @@ class BaseController extends Controller
      */
     public function initialize()
     {
+        //用户session KEY
+        $userKey = $this->config->session->adminUserKey;
+        $this->userInfo = $this->session->get($userKey);
+
         $this->url->setBaseUri('/admin/');
         //面包屑
         $this->breadcrumb[] = [

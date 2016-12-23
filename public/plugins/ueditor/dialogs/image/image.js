@@ -755,6 +755,20 @@
                     if (json.state == 'SUCCESS') {
                         _this.imageList.push(json);
                         $file.append('<span class="success"></span>');
+                        //七牛上传文件数据回写
+                        if (uploadType == 'qiniu') {
+                            var url = editor.getActionUrl(editor.getOpt('callbackAction'));
+                            $.ajax({
+                                type:'POST',
+                                dataType:'json',
+                                async:true,
+                                url:url,
+                                data:json,
+                                success:function(data) {
+                                    
+                                }
+                            });
+                        }
                     } else {
                         $file.find('.error').text(json.state).show();
                     }

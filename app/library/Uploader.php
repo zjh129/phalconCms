@@ -60,9 +60,29 @@ class Uploader extends Component
         $this->userId = (int)$userInfo['user_id'];
     }
 
+    /**
+     * 设置jsonConfig
+     */
     public function setJsonConfig()
     {
-        $this->jsonConfig = $this->uploader->setJsonConfig($this->jsonConfig);
+        switch ($this->uploadType){
+            case 'qiniu':
+                $this->jsonConfig['uploadType'] = $this->uploadType;
+                $this->jsonConfig['tokenActionName'] = 'getToken';
+                $this->jsonConfig['uploadUrl'] = 'http://upload.qiniu.com/';
+                //上传文件回写url
+                $this->jsonConfig['callbackAction'] = 'callBack';
+
+                $this->jsonConfig['imageFieldName'] = 'file';
+                $this->jsonConfig['videoFieldName'] = 'file';
+                $this->jsonConfig['fileFieldName'] = 'file';
+                //上传大小限制，单位B，默认100MB
+                $this->jsonConfig['videoMaxSize'] = 102400000*10;
+                break;
+            default:
+                $this->jsonConfig['uploadType'] = $this->uploadType;
+                $this->jsonConfig['tokenActionName'] = 'getToken';
+        }
     }
 
     /**
@@ -79,9 +99,9 @@ class Uploader extends Component
      * @param $key
      * @return mixed|string
      */
-    public function getToken($key)
+    public function getToken($key, $type)
     {
-        return $this->uploader->getToken($key);
+        return $this->uploader->getToken($key, $type);
     }
 
     /**

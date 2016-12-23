@@ -41,6 +41,7 @@ var ue_container = UE.getEditor('container',
 $jsonConfig['uploadType'] = 'qiniu';
 $jsonConfig['tokenActionName'] = 'getToken';
 $jsonConfig['uploadUrl'] = 'http://upload.qiniu.com/';
+$jsonConfig['callbackAction'] = 'callBack';
 $jsonConfig['imageFieldName'] = 'file';
 $jsonConfig['videoFieldName'] = 'file';
 $jsonConfig['fileFieldName'] = 'file';
@@ -100,6 +101,39 @@ uploader.on('uploadBeforeSend', function (file, data, header) {
                 }
 });
 ```
+上传成功数据回写：
+```javascript
+uploader.on('uploadSuccess', function (file, ret) {
+                var $file = $('#' + file.id);
+                try {
+                    var responseText = (ret._raw || ret),
+                        json = utils.str2json(responseText);
+                    if (json.state == 'SUCCESS') {
+                        _this.imageList.push(json);
+                        $file.append('<span class="success"></span>');
+                        //七牛上传文件数据回写
+                        if (uploadType == 'qiniu') {
+                            var url = editor.getActionUrl(editor.getOpt('callbackAction'));
+                            $.ajax({
+                                type:'POST',
+                                dataType:'json',
+                                async:true,
+                                url:url,
+                                data:json,
+                                success:function(data) {
+                                    
+                                }
+                            });
+                        }
+                    } else {
+                        $file.find('.error').text(json.state).show();
+                    }
+                } catch (e) {
+                    $file.find('.error').text(lang.errorServerUpload).show();
+                }
+            });
+```
+
 ####其他上传类别改造
 ./dialogs/attachment/attachment.js
 ./dialogs/video/video.js

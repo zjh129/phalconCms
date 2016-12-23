@@ -114,11 +114,25 @@ class UploadController extends BaseController
                 $key = $uploader->getFullName($type, $fileName);
                 if ($key){
                     $result['key'] = $key;
-                    $token = $uploader->getToken($key);
+                    $token = $uploader->getToken($key, $type);
                     $result['token'] = $token;
                 }else{
                     $result['token'] = '';
                 }
+                break;
+            case 'callBack':
+                $fileModel = new \MyApp\Models\Files();
+                $rs = $fileModel->save([
+                    'user_id'    => $this->userInfo['user_id'],
+                    'type'       => $this->request->get('type'),
+                    'uploadType' => $this->request->get('uploadType'),
+                    'url'        => $this->request->get('url'),
+                    'fileName'   => $this->request->get('fileName'),
+                    'oriName'    => $this->request->get('oriName'),
+                    'fileExt'    => $this->request->get('fileExt'),
+                    'size'       => $this->request->get('size', 'int'),
+                ]);
+                $result = $rs ? ['status'=>'success'] : ['status'=>'error'];
                 break;
             default:
                 $result = [
