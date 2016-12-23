@@ -106,6 +106,7 @@ class UploadController extends BaseController
                 $result = $uploader->saveRemote($jsonConfig['catcherFieldName']);
                 $uploader->saveDataToTable('image');
                 break;
+            /*获取上传token*/
             case 'getToken':
                 $type = $this->request->get('type');
                 $fileName = $this->request->get('fileName');
@@ -120,6 +121,7 @@ class UploadController extends BaseController
                     $result['token'] = '';
                 }
                 break;
+            /*上传成功文件数据回写*/
             case 'callBack':
                 $fileModel = new \MyApp\Models\Files();
                 $rs = $fileModel->save([
