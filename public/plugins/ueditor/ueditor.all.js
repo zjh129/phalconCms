@@ -24511,10 +24511,10 @@ UE.plugin.register('simpleupload', function (){
 
                 var imageActionUrl = me.getActionUrl(me.getOpt('imageActionName'));
                 var allowFiles = me.getOpt('imageAllowFiles');
-                var uploadType = me.getOpt('uploadType');
 
                 me.focus();
                 me.execCommand('inserthtml', '<img class="loadingclass" id="' + loadingId + '" src="' + me.options.themePath + me.options.theme +'/images/spacer.gif" title="' + (me.getLang('simpleupload.loading') || '') + '" >');
+
                 function callback(){
                     try{
                         var link, json, loader,
@@ -24522,7 +24522,6 @@ UE.plugin.register('simpleupload', function (){
                             result = body.innerText || body.textContent || '';
                         json = (new Function("return " + result))();
                         link = me.options.imageUrlPrefix + json.url;
-                        console.log(json);
                         if(json.state == 'SUCCESS' && json.url) {
                             loader = me.document.getElementById(loadingId);
                             loader.setAttribute('src', link);
@@ -24531,21 +24530,6 @@ UE.plugin.register('simpleupload', function (){
                             loader.setAttribute('alt', json.original || '');
                             loader.removeAttribute('id');
                             domUtils.removeClasses(loader, 'loadingclass');
-                            //七牛上传文件数据回写
-                            uploadType = me.getOpt('uploadType');
-                            if (uploadType == 'qiniu') {
-                                var url = me.getActionUrl(me.getOpt('callbackAction'));
-                                $.ajax({
-                                    type:'POST',
-                                    dataType:'json',
-                                    async:true,
-                                    url:url,
-                                    data:json,
-                                    success:function(data) {
-                                        
-                                    }
-                                });
-                            }
                         } else {
                             showErrorLoader && showErrorLoader(json.state);
                         }
@@ -24582,31 +24566,7 @@ UE.plugin.register('simpleupload', function (){
                 }
 
                 domUtils.on(iframe, 'load', callback);
-
-                uploadType = me.getOpt('uploadType');
-                if (uploadType == 'qiniu') {
-                    form.action = me.getOpt('uploadUrl');
-                    var url = me.getActionUrl(me.getOpt('tokenActionName'));
-                    console.log(me);
-                    $.ajax({
-                        dataType:'json',
-                        async:false,
-                        url:url,
-                        data:{
-                            type:'image',
-                            fileName:form.file.value,
-                        },
-                        onsuccess:function(data) {
-                            $(form).append('<input name="key" id="key" value="'+ data.key +'"/>');
-                            $(form).append('<input name="token" id="token" value="'+ data.token +'"/>');
-                        },
-                        onerror: function ( xhr ) {
-
-                        }
-                    });
-                }else{
-                    form.action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?':'&') + params);
-                }
+                form.action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?':'&') + params);
                 form.submit();
             });
 
