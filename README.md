@@ -13,18 +13,3 @@ git clone --depth=1 https://github.com/phalcon/phalcon-devtools.git
 ###cdn资源站
 在此网站上搜索对于资源引入到文件即可，无需在本地导入文件。
 http://www.bootcdn.cn/
-
-###ueditor配置
-修改路径:/ueditor/php/conf.php
-去七牛上注册账号，并添加对象存储，可以获取相应的配置信息
-```php
-//配置$QINIU_ACCESS_KEY和$QINIU_SECRET_KEY 为你自己的key
-$QINIU_ACCESS_KEY	= '';
-$QINIU_SECRET_KEY	= '';
-
-//配置bucket为你的bucket
-$BUCKET = "";
-
-//配置你的域名访问地址
-$HOST  = "";
-```
