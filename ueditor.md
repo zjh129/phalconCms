@@ -135,9 +135,7 @@ uploader.on('uploadSuccess', function (file, ret) {
 ```
 
 ####其他上传类别改造
-`./dialogs/attachment/attachment.js`
-`./dialogs/video/video.js`
-改造方法类似image.js的改造，
+`./dialogs/attachment/attachment.js` `./dialogs/video/video.js` 改造方法类似image.js的改造，
 ####然后在设置的serverUrl设置getToken动作，用于返回
 ```json
 {
