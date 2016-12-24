@@ -143,3 +143,86 @@ uploader.on('uploadSuccess', function (file, ret) {
     token:'xxxxxx',//上传秘钥，七牛php的sdk提供了此方法
 }
 ```
+
+
+###单独调用多图片上传组件
+使用方式：
+```javascript
+$("body").append('<div id="upload" style="display:none;"></div>');
+var ue_upload = UE.getEditor('upload', 
+{
+    "serverUrl": "/admin/Upload/uedituploader",
+    "toolbars": [
+        [
+            "insertimage"
+        ]
+    ],
+    "isShow": false
+});
+ue_upload.ready(function () {
+    //侦听图片上传
+    ue_upload.addListener('beforeInsertImage', function (t, arg) {
+        //调用回调方法
+        if(typeof(uploadCallback) === "function"){
+            uploadCallback(arg);
+        }else{
+            console.log("您未设置回调方法[uploadCallback(fileList)]");
+        }
+    })
+});
+$("#upload_btn").click(function(){
+    var uploadImage = ue_upload.getDialog("insertimage");
+    uploadImage.open();
+});
+//自定义回调方法
+function uploadCallback(list){
+    $.each(list, function(i, data){
+        var html = '';
+        html += '<a target="_blank" href="'+data.url+'" class="thumbnail" style="widht:200px; float:left;"><img class="carousel-inner img-responsive img-rounded" src="'+data.url+'"></a>'+"\n";
+        $('#uploadBox').append(html);
+    });
+}
+```
+###单独调用文件上传组件
+`dialogs/attachment/attachment.js` 调整
+```javascript
+editor.execCommand('insertfile', list);
+//下面增加一行增加
+editor.fireEvent('afterUpfile', list);
+```
+使用方式：
+```javascript
+$("body").append('<div id="upload" style="display:none;"></div>');
+var ue_upload = UE.getEditor('upload', 
+{
+    "serverUrl": "/admin/Upload/uedituploader",
+    "toolbars": [
+        [
+            "attachment"
+        ]
+    ],
+    "isShow": false
+});
+ue_upload.ready(function () {
+    //侦听文件上传
+    ue_upload.addListener('afterUpfile', function (t, arg) {
+        if(typeof(uploadCallback) === "function"){
+            uploadCallback(arg);
+        }else{
+            alert("您未设置回调方法[uploadCallback(list)]");
+        }
+    })
+});
+$("#upload_btn").click(function(){
+    var uploadFiles = ue_upload.getDialog("attachment");
+    uploadFiles.open();
+});
+//自定义回调方法
+function uploadCallback(list){
+    $.each(list, function(i, data){
+        var html = '';
+        html += '<a target="_blank" href="'+data.url+'" class="thumbnail" style="widht:200px; float:left;"><img class="carousel-inner img-responsive img-rounded" src="'+data.url+'"></a>'+"\n";
+        $('#uploadBox').append(html);
+    });
+}
+```

@@ -79,6 +79,7 @@
             }
 
             editor.execCommand('insertfile', list);
+            editor.fireEvent('afterUpfile', list);
         };
     }
 
@@ -491,8 +492,7 @@
             uploader.on('uploadBeforeSend', function (file, data, header) {
                 //这里可以通过data对象添加POST参数
                 header['X_Requested_With'] = 'XMLHttpRequest';
-                uploadType = editor.getOpt('uploadType');
-                if (uploadType == 'qiniu') {
+                if (editor.getOpt('uploadType') == 'qiniu') {
                     var token ="";
                     var key = "";
                     var url = editor.getActionUrl(editor.getOpt('tokenActionName'));
@@ -538,7 +538,7 @@
                         _this.fileList.push(json);
                         $file.append('<span class="success"></span>');
                         //七牛上传文件数据回写
-                        if (uploadType == 'qiniu') {
+                        if (editor.getOpt('uploadType') == 'qiniu') {
                             var url = editor.getActionUrl(editor.getOpt('callbackAction'));
                             $.ajax({
                                 type:'POST',

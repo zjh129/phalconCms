@@ -35,12 +35,12 @@ class MyTag extends Tag
             case 'files':
                 $parameters['toolbars'] = [['attachment']];
                 $parameters['isShow'] = false;
-                $code .= '$("body").append(\'<div id="' . $id . 'Box" style="display:none;"></div>\');' . PHP_EOL;
+                $code .= '$("body").append(\'<div id="' . $id . '" style="display:none;"></div>\');' . PHP_EOL;
                 break;
             case 'images':
                 $parameters['toolbars'] = [['insertimage']];
                 $parameters['isShow'] = false;
-                $code .= '$("body").append(\'<div id="' . $id . 'Box" style="display:none;"></div>\');' . PHP_EOL;
+                $code .= '$("body").append(\'<div id="' . $id . '" style="display:none;"></div>\');' . PHP_EOL;
                 break;
             default:
                 $defaultValue && $parameters['initialContent'] = htmlspecialchars($defaultValue);
@@ -51,46 +51,35 @@ class MyTag extends Tag
         switch ($type) {
             case 'files':
                 $code .= 'ue_'.$id.'.ready(function () {
-                        //设置编辑器不可用
-                        //_editor.setDisabled();
-                        //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
-                        //_editor.hide();
                         //侦听文件上传
-                        ue_'.$id.'_editor.addListener(\'afterUpfile\', function (t, arg) {
-                            $("#'.$id.'_val").attr("value", ue_'.$id.'.options.filePath + arg[0].url);
+                        ue_'.$id.'.addListener(\'afterUpfile\', function (t, arg) {
+                            if(typeof('.$id.'Callback) === "function"){
+                                '.$id.'Callback(arg);
+                            }else{
+                                console.log("您未设置回调方法['.$id.'Callback(fileList)]");
+                            }
                         })
                     });' . PHP_EOL;
                 $code .= '$("#'.$id.'_btn").click(function(){
-                        var myFiles = ue_'.$id.'.getDialog("attachment");
-                        myFiles.open();
+                        var '.$id.'Files = ue_'.$id.'.getDialog("attachment");
+                        '.$id.'Files.open();
                     });';
                 break;
             case 'images':
                 $code .= 'ue_'.$id.'.ready(function () {
-                        //设置编辑器不可用
-                        //_editor.setDisabled();
-                        //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
-                        //_editor.hide();
                         //侦听图片上传
                         ue_'.$id.'.addListener(\'beforeInsertImage\', function (t, arg) {
-                            $.each(arg, function(i, data){
-                                var html = \'\';
-                                html += \'<li>\'+"\n";
-                                html += \'<input type="hidden" name="voucher[]" id="voucher\'+i+\'" value="\'+data.src+\'">\'+"\n";
-                                html += \'<a target="_blank" href="\'+data.src+\'" class="thumbnail" style="widht:200px; float:left;"><img class="carousel-inner img-responsive img-rounded" src="\'+data.src+\'"></a>\'+"\n";
-                                html += \'<a class="voucherDelete" style="float:right;" href="javascript:;">删除</a><li>\'+"\n";
-                                $(\'#<?=$container?>Box\').append(html);
-                            });
-                
-                            //将地址赋值给相应的input
-                            //$("#'.$id.'_val").attr("value", arg[0].src);
-                            //图片预览
-                            //$("#'.$id.'_pre").attr("src", arg[0].src);
+                            //调用回调方法
+                            if(typeof('.$id.'Callback) === "function"){
+                                '.$id.'Callback(arg);
+                            }else{
+                                console.log("您未设置回调方法['.$id.'Callback(fileList)]");
+                            }
                         })
                     });' . PHP_EOL;
                 $code .= '$("#'.$id.'_btn").click(function(){
-                        var myImage = ue_'.$id.'.getDialog("insertimage");
-                        myImage.open();
+                        var '.$id.'Image = ue_'.$id.'.getDialog("insertimage");
+                        '.$id.'Image.open();
                     });' . PHP_EOL;
                 break;
         }
