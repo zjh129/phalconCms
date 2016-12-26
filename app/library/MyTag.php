@@ -46,7 +46,7 @@ class MyTag extends Tag
                 $defaultValue && $parameters['initialContent'] = htmlspecialchars($defaultValue);
         }
 
-        $editorName = 'ue_'.$id;
+        $editorName = 'ue_' . $id;
         $code .= "var {$editorName} = UE.getEditor('" . $id . "', " . PHP_EOL . json_encode($parameters, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ");" . PHP_EOL;
 
         switch ($type) {
@@ -116,7 +116,7 @@ class MyTag extends Tag
         //设置文件上传域的name
         //$parameters['fileVal'] = 'upfile';
         //文件接受服务器
-        switch ($uploadType){
+        switch ($uploadType) {
             case 'qiniu':
                 $parameters['server'] = 'http://up.qiniu.com/';
                 break;
@@ -124,7 +124,6 @@ class MyTag extends Tag
                 $parameters['server'] = isset($parameters['server']) ? $parameters['server'] : $di['url']->get('upload/uedituploader', ['action' => 'uploadimage']);
         }
         switch ($fileType) {
-
             case 'images':
                 $parameters['accept'] = [
                     'title'      => 'Images',
@@ -154,36 +153,10 @@ class MyTag extends Tag
                 // 缩略图大小
                 thumbnailWidth = 200 * ratio,
                 thumbnailHeight = 200 * ratio,
-                uploader_" . $id . ";";
-        $uploadName = 'uploader_'.$id;
+                uploader_" . $id . ";" . PHP_EOL;;
+        $uploadName = 'uploader_' . $id;
         $code .= "var {$uploadName} = WebUploader.create(" . json_encode($parameters, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ");" . PHP_EOL;
-        //当有文件添加进来的时候
-        if ($fileType == 'images') {
-            $code .= "{$uploadName}.on( 'uploadSuccess', function( file, response ) {
-                if(response.state == 'SUCCESS'){
-                    if(!$('#preview_{$id}').length){
-                        $('" . $parameters['pick'] . "').after('<div id=\"preview_$id\" class=\"col-sm-9 thumbnail\" style=\"margin: 0px;\"><img></div>');
-                    }
-                    // 创建缩略图
-                    uploader_{$id}.makeThumb( file, function( error, src ) {
-                        if ( error ) {
-                            return;
-                        }
-                        $('#preview_{$id} img').attr( 'src', src );
-                    }, thumbnailWidth, thumbnailHeight );
-                    if($('#{$id}_val').length){
-                       $('#{$id}_val').val(response.url); 
-                    }
-                }else{
-                    $.alert({title: '提示',content: '上传失败',autoClose: 'ok|1000',});
-                }
-            });" . PHP_EOL;
-            $code .= "if($('#{$id}_val').val() != '' && $('#preview_{$id}').length){
-                $('" . $parameters['pick'] . "').after('<div id=\"preview_{$id}\" class=\"col-sm-9 thumbnail\" style=\"margin: 0px;\"><img></div>');
-            }";
-        }
-
-        switch ($uploadType){
+        switch ($uploadType) {
             case 'qiniu':
                 $code .= "{$uploadName}.on('uploadBeforeSend', function (file, data, header) {
                         //这里可以通过data对象添加POST参数
@@ -191,7 +164,7 @@ class MyTag extends Tag
                         $.ajax({
                             dataType:'json',
                             async:false,
-                            url:url,
+                            url:'" . $di['url']->get('upload/uedituploader', ['action' => 'getToken']) . "',
                             data:{
                                 type:'image',
                                 fileName:file.file.name,
@@ -203,12 +176,50 @@ class MyTag extends Tag
                                 data.token = rs.token;
                             }
                         });
-                    });";
+                    });" . PHP_EOL;
+                $code .= "{$uploadName}.on( 'uploadSuccess', function( file, response ) {
+                        if(response.state == 'SUCCESS'){
+                            if(typeof({$id}Callback) === 'function'){
+                                {$id}Callback(response);
+                            }else{
+                                alert('您未设置回调方法[{$id}Callback(response)]');
+                            }
+                            // 创建缩略图
+                            if($('#{$id}Preview').length){
+                                {$uploadName}.makeThumb( file, function( error, src ) {
+                                    if ( error ) {
+                                        return;
+                                    }
+                                    $('#{$id}Preview img').attr( 'src', src );
+                                }, thumbnailWidth, thumbnailHeight );
+                            }
+                            //七牛上传文件数据回写
+                            $.ajax({
+                                type:'POST',
+                                dataType:'json',
+                                async:true,
+                                url:'" . $di['url']->get('upload/uedituploader', ['action' => 'callBack']) . "',
+                                data:response,
+                                success:function(data) {}
+                            });
+                        }else{
+                            alert('上传失败');
+                        }
+                    });" . PHP_EOL;
                 break;
             default:
                 $code .= "{$uploadName}.on('uploadBeforeSend', function( block, data, headers) {  
                             data.key = new Date().toLocaleTimeString();  
                         });";
+                //文件上传成功，给item添加成功class, 用样式标记上传成功。
+                $code .= "{$uploadName}.on( 'uploadSuccess', function( file, response ) {
+                            $( '#'+file.id ).addClass('upload-state-done');
+                            if(typeof({$id}Callback) === 'function'){
+                                {$id}Callback(response);
+                            }else{
+                                alert('您未设置回调方法[{$id}Callback(response)]');
+                            }
+                        });" . PHP_EOL;
         }
         //文件上传过程中创建进度条实时显示。
         $code .= "{$uploadName}.on( 'uploadProgress', function( file, percentage ) {
@@ -222,13 +233,9 @@ class MyTag extends Tag
                         percent.css( 'width', percentage * 100 + '%' );
                     }
                 });" . PHP_EOL;
-        //文件上传成功，给item添加成功class, 用样式标记上传成功。
-        $code .= "{$uploadName}.on( 'uploadSuccess', function( file ) {
-                    $( '#'+file.id ).addClass('upload-state-done');
-                });" . PHP_EOL;
         //文件上传失败，显示上传出错。
         $code .= "{$uploadName}.on( 'uploadError', function( file ) {
-                    $.alert({title: '提示',content: '上传失败',autoClose: 'ok|1000',});
+                    alert('上传失败');
                 });" . PHP_EOL;
         //完成上传完了，成功或者失败，先删除进度条。
         $code .= "{$uploadName}.on( 'uploadComplete', function( file ) {
