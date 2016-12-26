@@ -8,6 +8,7 @@ class Uploader extends Component
 {
     private $jsonConfig;
     private $uploadType;//文件上传方式
+    private $qiniuConfig;//qiniu config
     private $uploader;
     private $userId;//用户ID
 
@@ -32,8 +33,15 @@ class Uploader extends Component
 
         switch ($this->config->environment) {
             case 'dev':
+                $this->qiniuConfig = $this->config->qiniu->devlop;
+                $this->uploadType = 'qiniu';
+                break;
             case 'test':
+                $this->qiniuConfig = $this->config->qiniu->test;
+                $this->uploadType = 'qiniu';
+                break;
             case 'production':
+                $this->qiniuConfig = $this->config->qiniu->production;
                 $this->uploadType = 'qiniu';
                 break;
             default:
@@ -43,11 +51,11 @@ class Uploader extends Component
         switch ($this->uploadType) {
             case 'qiniu':
                 $qiniuUploader = new \MyApp\Library\Upload\UploadQiniu($config);
-                $qiniuUploader->setQiniuConfig($this->config->qiniu->phalcontest);
+                $qiniuUploader->setQiniuConfig($this->qiniuConfig);
                 $this->uploader = $qiniuUploader;
 
                 //设置抓取远程图片配置本地域名
-                $this->jsonConfig['catcherLocalDomain'][] = $this->config->qiniu->phalcontest->domain;
+                $this->jsonConfig['catcherLocalDomain'][] = $this->qiniuConfig->domain;
                 break;
             case 'local':
 

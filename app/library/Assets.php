@@ -39,17 +39,12 @@ class Assets extends Component
 
         //Bootstrap 3.3.7
         if (in_array('bootstrap', $this->assetsList)) {
-            if ($isLocal) {
-                $headerCss->addCss('bootstrap/css/bootstrap.min.css');
-                $footerJs->addJs('bootstrap/js/bootstrap.min.js');
-            } else {
-                $headerCss->addCss('//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css', false);
-                $footerJs->addJs('//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js', false);
-            }
+            $headerCss->addCss('//static.tudouyu.cn/bootstrap/bootstrap.min.css', false);
+            $footerJs->addJs('//static.tudouyu.cn/bootstrap/bootstrap.min.js', false);
         }
         //Font-Awesome
         if (in_array('Font-Awesome', $this->assetsList)) {
-            $headerCss->addCss('//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css', false);
+            $headerCss->addCss('//static.tudouyu.cn/font-awesome/4.7.0/css/font-awesome.min.css', false);
         }
         ///Ionicons
         if (in_array('Ionicons', $this->assetsList)) {
