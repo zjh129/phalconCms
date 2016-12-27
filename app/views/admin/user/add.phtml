@@ -27,18 +27,15 @@
     <!-- /.row -->
 </section>
 <!-- /.content -->
-<script type="text/javascript">
-    var UEDITOR_HOME_URL = 'http://www.phalconcms.com/';
-</script>
 <?php echo $this->tag->ueditor('container','full'); ?>
 <script type="text/javascript">
     function uploadCallback(list){
         $.each(list, function(i, data){
             var html = '';
-            html += '<a target="_blank" href="'+data.url+'" class="thumbnail" style="widht:200px; float:left;"><img class="carousel-inner img-responsive img-rounded" src="'+data.url+'"></a>'+"\n";
+            html += '<a target="_blank" href="'+data.src+'" class="thumbnail" style="widht:200px; float:left;"><img class="carousel-inner img-responsive img-rounded" src="'+data.src+'"></a>'+"\n";
             $('#uploadBox').append(html);
         });
     }
 </script>
-<?php //echo $this->tag->ueditor('upload','images'); ?>
+<?php echo $this->tag->ueditor('upload','images'); ?>
 </script>
