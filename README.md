@@ -13,3 +13,6 @@ git clone --depth=1 https://github.com/phalcon/phalcon-devtools.git
 ###cdn资源站
 在此网站上搜索对于资源引入到文件即可，无需在本地导入文件。
 http://www.bootcdn.cn/
+
+###composer换源
+http://pkg.phpcomposer.com/

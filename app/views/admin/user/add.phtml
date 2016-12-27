@@ -27,7 +27,10 @@
     <!-- /.row -->
 </section>
 <!-- /.content -->
-<?php //echo $this->tag->ueditor('container','full'); ?>
+<script type="text/javascript">
+    var UEDITOR_HOME_URL = 'http://www.phalconcms.com/';
+</script>
+<?php echo $this->tag->ueditor('container','full'); ?>
 <script type="text/javascript">
     function uploadCallback(list){
         $.each(list, function(i, data){
@@ -37,5 +40,5 @@
         });
     }
 </script>
-<?php echo $this->tag->ueditor('upload','images'); ?>
+<?php //echo $this->tag->ueditor('upload','images'); ?>
 </script>

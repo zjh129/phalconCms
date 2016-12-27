@@ -102,11 +102,11 @@ class Assets extends Component
             $headerJs->addJs('//static.tudouyu.cn/bootstrapvalidator/0.5.3/bootstrapValidator.min.js', false);
             $headerJs->addJs('//static.tudouyu.cn/bootstrapvalidator/0.5.3/language/zh_CN.js', false);
         }
-        //UEditor,选用本地文件，修复点击上传图片时等待很慢的问题，
+        //UEditor,选用本地文件，修复点击上传图片时等待很慢的问题，坑爹的百度编辑器，居然不能外网引用
         //修复地址：https://github.com/fex-team/ueditor/issues/2983#issuecomment-239741212
         if (in_array('UEditor', $this->assetsList)){
-            $headerJs->addJs('//static.tudouyu.cn/ueditor/1.4.3/ueditor.config.js', false);
-            $headerJs->addJs('//static.tudouyu.cn/ueditor/1.4.3/ueditor.all.min.js', false);
+            $headerJs->addJs('/ueditor/ueditor.config.js');
+            $headerJs->addJs('/ueditor/ueditor.all.min.js');
         }
         //webuploader
         if (in_array('webuploader', $this->assetsList)){

@@ -1,5 +1,11 @@
 {
     "require":{
         "qiniu/php-sdk":"7.*"
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
     }
 }
