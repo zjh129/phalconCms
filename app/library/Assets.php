@@ -88,8 +88,8 @@ class Assets extends Component
         }
         //Select2
         if (in_array('Select2', $this->assetsList)) {
-            $headerCss->addCss('//static.tudouyu.cn/select2/4.0.3/css/select2.min.css', false);
-            $headerJs->addJs('//static.tudouyu.cn/select2/4.0.3/js/select2.full.min.js', false);
+            $headerCss->addCss('//static.tudouyu.cn/select2/4.0.3/select2.min.css', false);
+            $headerJs->addJs('//static.tudouyu.cn/select2/4.0.3/select2.full.min.js', false);
         }
         //iCheck for checkboxes and radio inputs
         if (in_array('iCheck', $this->assetsList)) {
@@ -98,9 +98,9 @@ class Assets extends Component
         }
         //bootstrapValidator
         if (in_array('bootstrapValidator', $this->assetsList)) {
-            $headerCss->addCss('//static.tudouyu.cn/bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css', false);
-            $headerJs->addJs('//static.tudouyu.cn/bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js', false);
-            $headerJs->addJs('//static.tudouyu.cn/bootstrapvalidator/0.5.3/js/language/zh_CN.js', false);
+            $headerCss->addCss('//static.tudouyu.cn/bootstrapvalidator/0.5.3/bootstrapValidator.min.css', false);
+            $headerJs->addJs('//static.tudouyu.cn/bootstrapvalidator/0.5.3/bootstrapValidator.min.js', false);
+            $headerJs->addJs('//static.tudouyu.cn/bootstrapvalidator/0.5.3/language/zh_CN.js', false);
         }
         //UEditor,选用本地文件，修复点击上传图片时等待很慢的问题，
         //修复地址：https://github.com/fex-team/ueditor/issues/2983#issuecomment-239741212

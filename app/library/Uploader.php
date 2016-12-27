@@ -29,7 +29,7 @@ class Uploader extends Component
      */
     public function __construct($config = [])
     {
-        $this->jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH . "/public/plugins/ueditor/php/config.json")), true);
+        $this->jsonConfig = json_decode(preg_replace("/\/\*[\s\S]+?\*\//", "", file_get_contents(APP_PATH ."/app/library/Upload/config.json")), true);
 
         switch ($this->config->environment) {
             case 'dev':
