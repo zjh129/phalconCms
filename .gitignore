@@ -4,4 +4,5 @@
 /app/cache
 /.idea
 /public/upload/*
+/vendor/
 !/public/upload/index.html
