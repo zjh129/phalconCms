@@ -16,3 +16,6 @@ http://www.bootcdn.cn/
 
 ###composer换源
 http://pkg.phpcomposer.com/
+
+###codeception自动化测试说明
+[文档操作说明](codeception.md)
