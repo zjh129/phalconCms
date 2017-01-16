@@ -5,3 +5,5 @@
 /.idea
 /public/upload/*
 !/public/upload/index.html
+
+tests/_output/*
