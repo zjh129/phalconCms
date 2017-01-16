@@ -1,7 +1,8 @@
 {
     "require":{
         "qiniu/php-sdk":"7.*",
-        "codeception/codeception": "*"
+        "codeception/codeception": "*",
+        "flow/jsonpath": "> 0.2"
     },
     "repositories": {
         "packagist": {

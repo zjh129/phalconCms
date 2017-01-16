@@ -172,6 +172,17 @@ class ComposerStaticInit4c092b2f9f881480c1b9e37f08a83548
                 0 => __DIR__ . '/..' . '/phpspec/prophecy/src',
             ),
         ),
+        'F' => 
+        array (
+            'Flow\\JSONPath\\Test' => 
+            array (
+                0 => __DIR__ . '/..' . '/flow/jsonpath/tests',
+            ),
+            'Flow\\JSONPath' => 
+            array (
+                0 => __DIR__ . '/..' . '/flow/jsonpath/src',
+            ),
+        ),
         'B' => 
         array (
             'Behat\\Gherkin' => 
