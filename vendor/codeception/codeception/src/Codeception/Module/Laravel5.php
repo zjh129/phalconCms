@@ -12,6 +12,7 @@ use Codeception\Subscriber\ErrorHandler;
 use Codeception\Util\ReflectionHelper;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Support\Collection;
 
 /**
  *
@@ -165,17 +166,17 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
     {
         $this->client = new LaravelConnector($this);
 
-        // Database migrations and seeder should run before database cleanup transaction starts
+        // Database migrations should run before database cleanup transaction starts
         if ($this->config['run_database_migrations']) {
             $this->callArtisan('migrate', ['--path' => $this->config['database_migrations_path']]);
         }
 
-        if ($this->config['run_database_seeder']) {
-            $this->callArtisan('db:seed', ['--class' => $this->config['database_seeder_class']]);
+        if ($this->applicationUsesDatabase() && $this->config['cleanup']) {
+            $this->app['db']->beginTransaction();
         }
 
-        if (isset($this->app['db']) && $this->config['cleanup']) {
-            $this->app['db']->beginTransaction();
+        if ($this->config['run_database_seeder']) {
+            $this->callArtisan('db:seed', ['--class' => $this->config['database_seeder_class']]);
         }
     }
 
@@ -186,6 +187,10 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
      */
     public function _after(\Codeception\TestInterface $test)
     {
+        if (! $this->applicationUsesDatabase()) {
+            return;
+        }
+
         if (isset($this->app['db']) && $this->config['cleanup']) {
             $this->app['db']->rollback();
         }
@@ -194,6 +199,16 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
         if (isset($this->app['db'])) {
             $this->app['db']->disconnect();
         }
+    }
+
+    /**
+     * Does the application use the database?
+     *
+     * @return bool
+     */
+    private function applicationUsesDatabase()
+    {
+        return ! empty($this->app['config']['database.default']);
     }
 
     /**
@@ -220,8 +235,6 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
     protected function registerAutoloaders()
     {
         require $this->config['project_dir'] . $this->config['vendor_dir'] . DIRECTORY_SEPARATOR . 'autoload.php';
-
-        \Illuminate\Support\ClassLoader::register();
     }
 
     /**
@@ -1013,6 +1026,58 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
     }
 
     /**
+     * Checks that number of given records were found in database.
+     * You can pass the name of a database table or the class name of an Eloquent model as the first argument.
+     *
+     * ``` php
+     * <?php
+     * $I->seeNumRecords(1, 'users', array('name' => 'davert'));
+     * $I->seeNumRecords(1, 'App\User', array('name' => 'davert'));
+     * ?>
+     * ```
+     *
+     * @param integer $expectedNum
+     * @param string $table
+     * @param array $attributes
+     * @part orm
+     */
+    public function seeNumRecords($expectedNum, $table, $attributes = [])
+    {
+        if (class_exists($table)) {
+            $currentNum = $this->countModels($table, $attributes);
+            if ($currentNum != $expectedNum) {
+                $this->fail("The number of found $table ($currentNum) does not match expected number $expectedNum with " . json_encode($attributes));
+            }
+        } else {
+            $currentNum = $this->countRecords($table, $attributes);
+            if ($currentNum != $expectedNum) {
+                $this->fail("The number of found records ($currentNum) does not match expected number $expectedNum in table $table with " . json_encode($attributes));
+            }
+        }
+    }
+
+    /**
+     * Retrieves number of records from database
+     * You can pass the name of a database table or the class name of an Eloquent model as the first argument.
+     *
+     * ``` php
+     * <?php
+     * $I->grabNumRecords('users', array('name' => 'davert'));
+     * $I->grabNumRecords('App\User', array('name' => 'davert'));
+     * ?>
+     * ```
+     *
+     * @param string $table
+     * @param array $attributes
+     * @return integer
+     * @part orm
+     */
+    public function grabNumRecords($table, $attributes = [])
+    {
+        return class_exists($table)? $this->countModels($table, $attributes) : $this->countRecords($table, $attributes);
+    }
+
+    /**
      * @param string $modelClass
      * @param array $attributes
      *
@@ -1020,13 +1085,7 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
      */
     protected function findModel($modelClass, $attributes = [])
     {
-        $model = new $modelClass;
-
-        if (!$model instanceof EloquentModel) {
-            throw new \RuntimeException("Class $modelClass is not an Eloquent model");
-        }
-
-        $query = $model->newQuery();
+        $query = $this->getQueryBuilderFromModel($modelClass);
         foreach ($attributes as $key => $value) {
             $query->where($key, $value);
         }
@@ -1041,12 +1100,68 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
      */
     protected function findRecord($table, $attributes = [])
     {
-        $query = $this->app['db']->table($table);
+        $query = $this->getQueryBuilderFromTable($table);
         foreach ($attributes as $key => $value) {
             $query->where($key, $value);
         }
 
         return (array) $query->first();
+    }
+
+    /**
+     * @param string $modelClass
+     * @param array $attributes
+     * @return integer
+     */
+    protected function countModels($modelClass, $attributes = [])
+    {
+        $query = $this->getQueryBuilderFromModel($modelClass);
+        foreach ($attributes as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        return $query->count();
+    }
+
+    /**
+     * @param string $table
+     * @param array $attributes
+     * @return integer
+     */
+    protected function countRecords($table, $attributes = [])
+    {
+        $query = $this->getQueryBuilderFromTable($table);
+        foreach ($attributes as $key => $value) {
+            $query->where($key, $value);
+        }
+
+        return $query->count();
+    }
+
+    /**
+     * @param string $modelClass
+     *
+     * @return EloquentModel
+     */
+    protected function getQueryBuilderFromModel($modelClass)
+    {
+        $model = new $modelClass;
+
+        if (!$model instanceof EloquentModel) {
+            throw new \RuntimeException("Class $modelClass is not an Eloquent model");
+        }
+
+        return $model->newQuery();
+    }
+
+    /**
+     * @param string $table
+     *
+     * @return EloquentModel
+     */
+    protected function getQueryBuilderFromTable($table)
+    {
+        return $this->app['db']->table($table);
     }
 
     /**
@@ -1071,7 +1186,14 @@ class Laravel5 extends Framework implements ActiveRecord, PartedModule
     public function have($model, $attributes = [], $name = 'default')
     {
         try {
-            return $this->modelFactory($model, $name)->create($attributes);
+            $result = $this->modelFactory($model, $name)->create($attributes);
+
+            // Since Laravel 5.4 the model factory returns a collection instead of a single object
+            if ($result instanceof Collection) {
+                $result = $result[0];
+            }
+
+            return $result;
         } catch (\Exception $e) {
             $this->fail("Could not create model: \n\n" . get_class($e) . "\n\n" . $e->getMessage());
         }
