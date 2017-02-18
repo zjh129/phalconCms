@@ -39,9 +39,10 @@ class HomeModule implements ModuleDefinitionInterface
             [
                 'MyApp\Home\Controllers' => APP_PATH . '/app/controllers/home',
                 'MyApp\Home\Forms'       => APP_PATH . '/app/forms/home',
-                'MyApp\Models'           => APP_PATH . '/app/models',
-                'MyApp\Library'          => APP_PATH . '/app/library',
-                'MyApp\Plugins'          => APP_PATH . '/app/plugins',
+                'MyApp\Models'           => $config->application->modelsDir,
+                'MyApp\Library'          => $config->application->libraryDir,
+                'MyApp\Plugins'          => $config->application->pluginsDir,
+                'MyApp\Service'          => $config->application->serviceDir,
             ]
         );
 

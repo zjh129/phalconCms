@@ -34,16 +34,18 @@ class AdminModule implements ModuleDefinitionInterface
             $config->application->libraryDir,
             $config->application->modelsDir,
             $config->application->formsDir,
+            $config->application->serviceDir,
         ])->register();
 
         $loader->registerNamespaces(
             [
                 'MyApp\Admin\Controllers' => APP_PATH . '/app/controllers/admin',
                 'MyApp\Admin\Forms'       => APP_PATH . '/app/forms/admin',
-                'MyApp\Models'            => APP_PATH . '/app/models',
-                'MyApp\Library'           => APP_PATH . '/app/library',
+                'MyApp\Models'            => $config->application->modelsDir,
+                'MyApp\Library'           => $config->application->libraryDir,
                 'MyApp\Library\Upload'    => APP_PATH . '/app/library/Upload',
-                'MyApp\Plugins'           => APP_PATH . '/app/plugins',
+                'MyApp\Plugins'           => $config->application->pluginsDir,
+                'MyApp\Service'           => $config->application->serviceDir,
             ]
         );
 
